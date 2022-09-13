@@ -146,7 +146,7 @@ fetch('http://localhost:3000/')
   });
 ```
 
-##### 7-3.作为中间层，请求其他服务器数据，再转发给前端，cors 请求
+##### 7-4.作为中间层，请求其他服务器数据，再转发给前端，nodejs 用 get 请求别的服务器接口
 
 ```js
 /**
@@ -180,13 +180,11 @@ function httpsGetMeituan(cb) {
       res.on('data', (chunk) => {
         // 请求得到的数据是数据流的格式
         data += chunk;
-
         // process.stdout.write(d); // 官网写法
       });
 
+      // 告诉服务器已经发送完毕
       res.on('end', () => {
-        // console.log(data);
-        // response.end(data);
         cb(data); // 回调
       });
     }
@@ -201,6 +199,146 @@ fetch('http://127.0.0.1:3000/api/list')
     console.log(res);
   });
 ```
+
+##### 7-5.作为中间层，请求其他服务器数据，再转发给前端，nodejs 用 post 请求别的服务器接口
+
+| Content-Type          | request body                      |
+| --------------------- | --------------------------------- |
+| applicaiton-json      | json 格式 （使用 JSON.stringify） |
+| x-www-form-urlencoded | 'name=qiuli&age=18'               |
+
+```js
+const http = require('http');
+const https = require('https');
+
+http
+  .createServer((req, res) => {
+    res.writeHead(200, {
+      'Access-Control-Allow-Origin': '*',
+    });
+
+    if (req.url === '/api/list') {
+      httpsPost((data) => res.end(data));
+    }
+  })
+  .listen(3000);
+
+function httpsPost(cb) {
+  const options = {
+    hostname: 'dreport.meituan.net',
+    port: '443',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      // 'Content-Type': 'x-www-form-urlencoded',
+    },
+  };
+
+  const postData = JSON.stringify([
+    {
+      category: 'fe_perf_web',
+      logs: [{ type: 'browser.pv', value: 1, tags: {}, ts: '1662964164972' }],
+      env: {
+        token: '59918eb8616ab3217c7eeaf5',
+        sdkVersion: '1.1.9',
+        sr: '1366x768',
+        vp: '1349x150',
+        csz: 273,
+        ua:
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36',
+        uuid: '1662952731919',
+        url: 'https://gz.meituan.com/',
+        region: '',
+        operator: '',
+        network: '',
+        container: '',
+        os: '',
+        visit_id: 'd2439e96-8f89-40fb-8f54-634c48a00ef3',
+        other_uuid: '1ca7cddd257c4c2393f8.1662952717.1.0.0',
+      },
+    },
+  ]);
+  // const postData = 'name=qiuli&age=18';
+  let data = '';
+  const req = https.request(options, (res) => {
+    res.on('data', (chunk) => {
+      data += chunk;
+    });
+    res.on('end', () => {
+      cb(data);
+    });
+  });
+
+  // Write data to request body
+  req.write(postData);
+  req.end();
+}
+```
+
+```js
+fetch('http://127.0.0.1:3000/api/list')
+  .then((res) => res.text())
+  .then((res) => {
+    console.log(res);
+  });
+```
+
+##### 7-6.作为中间层，爬取一个网页，聚合为数据，使用 cheerio 第三方模块做爬虫
+
+```bash
+npm init
+npm i cheerio -S
+```
+
+```js
+/**
+ * 有时候后端给前端返回一个html页面，这个时候通过nodejs可以直接爬虫到整个html页面，在nodejs中间层处理成新的数据返回给前端，通过cheerio第三方这个插件
+ * https://github.com/cheeriojs/cheerio/wiki/Chinese-README
+ */
+
+const http = require('http');
+const cheerio = require('cheerio');
+
+http
+  .createServer((req, res) => {
+    res.writeHead(200, {
+      'Content-Type': 'application/json;chaset=utf-8',
+    });
+    if (req.url === '/api/list') {
+      httpsGet((data) => res.end(spider(data)));
+    }
+  })
+  .listen(3000);
+
+function httpsGet(cb) {
+  let data = '';
+  http.get('http://i.meituan.com/', (res) => {
+    res.on('data', (chunk) => {
+      data += chunk;
+    });
+    res.on('end', () => {
+      cb(data);
+    });
+  });
+}
+
+function spider(data) {
+  const $ = cheerio.load(data); // 在这里的基础上去找
+  const $categoryList = $('.category-wrap');
+
+  const categoryArr = [];
+  $categoryList.each((index, value) => {
+    categoryArr.push({
+      title: $(value).find('.category-text').text(),
+      imgSrc: $(value).find('.category-img').attr('src'),
+    });
+  });
+  // console.log(categoryArr, 'categoryArr');
+  return JSON.stringify(categoryArr);
+}
+```
+
+<hr/>
 
 #### (2)、[url 模块](https://nodejs.org/dist/latest-v16.x/docs/api/url.html)
 
@@ -236,6 +374,8 @@ http
     console.log('server start');
   });
 ```
+
+<hr/>
 
 #### (3)、[querystring 模块 - legacy 旧版](https://nodejs.org/dist/latest-v18.x/docs/api/querystring.html) querystring 模块已废弃，实现相同使用 url 的新版写法
 

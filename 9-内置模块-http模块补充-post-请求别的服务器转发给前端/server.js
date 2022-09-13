@@ -28,7 +28,6 @@ function httpsPost (cb) {
   let data = '';
   const req = https.request(options, (res) => {
     res.on('data', (chunk) => {
-      // console.log(`BODY: ${chunk}`); 
       data += chunk;
     });
     res.on('end', () => {

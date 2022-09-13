@@ -4,7 +4,6 @@
  */
 
 const http = require('http');
-// const https = require('https');
 const cheerio = require('cheerio');
 
 http.createServer((req, res) => {
