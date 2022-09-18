@@ -430,9 +430,9 @@ console.log(newStr6);
 | 异步 | mkdir     | rename     | rmdir                          | rm                               | writeFile                    | appendFile     | writeFile       | unlink     | readdir              | stat                                        |
 | 解释 |           |            | 目录下有子文件或子目录，删不掉 | { force: true, recursive: true } | 新写入的文件会覆盖之前的文件 | 文件不会覆盖   | 使用 utf-8 编码 |            | 读取到的文件是个数组 | stats.isFile()文件、stats.isDirectory()目录 |
 
-| 读流文件            | 写流入文件           | 读到的文件通过管道写入另一个文件,管道可以连续调用 |
-| ------------------- | -------------------- | ------------------------------------------------- |
-| fs.createReadStream | fs.createWriteStream | rs.pipe(ws)                                       |
+| 读流文件            | 写流入文件           | 读到的文件通过管道写入另一个文件 |
+| ------------------- | -------------------- | -------------------------------- |
+| fs.createReadStream | fs.createWriteStream | rs.pipe(ws)                      |
 
 ```js
 const fs = require('fs');
@@ -449,18 +449,6 @@ rs.pipe(ws);
 
 ##### 服务器返回给浏览器静态资源页面，通常是经过压缩的，zlib 提供压缩能力
 
-```js
-
-```
-
-#### (4)、[events 模块](https://nodejs.org/dist/latest-v18.x/docs/api/events.html)
-
-##### events 模块用来表示 “发布-订阅” 模式
-
-```js
-
-```
-
 ### 8.让 node 实时编译的工具
 
 ```bash
@@ -475,7 +463,7 @@ node-dev server.js
 
 ```bash
 采用哪种编码格式传输正文，就是对正文进行压缩的方式
-# Content-Encoding: deflate; gzip;
+# Content-Encoding: deflate; zlib; gzip;
 工作原理：
 1、浏览器发送请求，Request Headers通过Accept-Encoding带上自己支持的内容编码列表
 2、服务器收到请求，从中挑出一种格式对响应正文进行编码，通过Content-Encodeing来说明服务器选定的编码格式。

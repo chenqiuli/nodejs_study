@@ -7,6 +7,7 @@ const fs = require('fs');
 const rs = fs.createReadStream('./bbb.txt', 'utf-8');
 const ws = fs.createWriteStream("./aaa.txt");
 
+/* --- 第一种方法 ---- */
 // 读取
 let res = '';
 rs.on('data', (chunk) => {
@@ -25,6 +26,8 @@ rs.on('error', (err) => {
   console.log(err);
 });
 
+/* --- 第二种方法 ---- */
+rs.pipe(ws);
 
 
 
