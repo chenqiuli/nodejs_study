@@ -416,6 +416,49 @@ const newStr6 = decodeURIComponent(str6); // 把转义字符转回来
 console.log(newStr6);
 ```
 
+<hr />
+
+#### (3)、[fs 模块](https://nodejs.org/dist/latest-v18.x/docs/api/fs.html)
+
+##### 1.fs 模块是对系统的输入输出操作，path 可以是相对路径或绝对路径，分为异步和同步，callback 的写法会导致回调地狱，可以使用 promise 实现异步（解决回调地狱，但是 promise 里面嵌套 promise，也是回调地狱），所以里面的 promise 可以使用 async_await 优雅解决回调地狱
+
+##### 2.callback 的写法执行成功，是返回 null
+
+|      | 创建文件  | 重命名文件 | 删除目录                       | 强制删除目录                     | 写入文件                     | 写入文件       | 读文件          | 删除文件   | 读取目录下的所有文件 | 判断文件是目录还是文件                      |
+| ---- | --------- | ---------- | ------------------------------ | -------------------------------- | ---------------------------- | -------------- | --------------- | ---------- | -------------------- | ------------------------------------------- |
+| 同步 | mkdirSync | renameSync | rmdirSync                      | rmSync                           | writeFileSync                | appendFileSync | writeFileSync   | unlinkSync | readdirSync          | statSync                                    |
+| 异步 | mkdir     | rename     | rmdir                          | rm                               | writeFile                    | appendFile     | writeFile       | unlink     | readdir              | stat                                        |
+| 解释 |           |            | 目录下有子文件或子目录，删不掉 | { force: true, recursive: true } | 新写入的文件会覆盖之前的文件 | 文件不会覆盖   | 使用 utf-8 编码 |            | 读取到的文件是个数组 | stats.isFile()文件、stats.isDirectory()目录 |
+
+| 读流文件            | 写流入文件           |
+| ------------------- | -------------------- |
+| fs.createReadStream | fs.createWriteStream |
+
+```js
+const fs = require('fs');
+
+const rs = fs.createReadStream('./bbb.txt', 'utf-8');
+const ws = fs.createWriteStream('./aaa.txt');
+
+// 读取
+let res = '';
+rs.on('data', (chunk) => {
+  res += chunk;
+});
+
+rs.on('end', () => {
+  console.log(res);
+  // 写入
+  ws.write(res);
+
+  ws.end();
+});
+
+rs.on('error', (err) => {
+  console.log(err);
+});
+```
+
 ### 8.让 node 实时编译的工具
 
 ```bash

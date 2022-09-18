@@ -1,8 +1,10 @@
-const fs = require('fs');
 
 /**
+ * callback 的写法
  * 路径可绝对路径也可相对路径，操作成功err返回null
  */
+
+const fs = require('fs');
 
 /**
  * 创建目录

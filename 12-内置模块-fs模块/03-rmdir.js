@@ -20,27 +20,23 @@ fs.rmdir("./test", (err) => {
 // });
 
 /**
- * test目录下有a.txt,hhh.html,test2子目录，必须先删除了所有的孩子，才能删test父目录
+ * test目录下有a.txt,hhh.html，必须先删除了所有的子文件，才能删test父目录
  */
-// fs.readdir("./test", (err, files) => {
-//   // console.log(err, files);
-//   const data = deep(files);
-//   console.log(data, 'data');
-// });
+fs.readdir("./test", (err, files) => {
+  console.log(err, files);
+  /**
+   * 如果files很多，那这里会执行很久，必须等这里先执行完，不然会报noempty的error，才执行rmdir
+   * 等文件全部都执行完，可以使用同步的方式，同步会阻塞后面的代码
+   * 也可以使用promise的方式，等前面的代码执行完，再执行后面的代码
+   * 看
+   */
+  files.forEach(item => {
+    fs.unlink(`./test/${item}`, (err) => {
+      console.log(err);
+    });
+  });
 
-// const deep = (files) => {
-//   // console.log(files);
-//   files?.forEach(item => {
-//     fs.stat(`./test/${item}`, (err, stats) => {
-//       if (stats?.isFile()) {
-//         // 文件
-//         return item.split(",");
-//       } else {
-//         // 目录
-//         fs.readdir(`./test/${item}`, (err, subFiles) => {
-//           return `./test/${item}/` + deep(subFiles);
-//         });
-//       }
-//     });
-//   });
-// }
+  fs.rmdir('./test', (err) => {
+    console.log(err);
+  });
+});
