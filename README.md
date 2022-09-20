@@ -430,9 +430,9 @@ console.log(newStr6);
 | 异步 | mkdir     | rename     | rmdir                          | rm                               | writeFile                    | appendFile     | writeFile       | unlink     | readdir              | stat                                        |
 | 解释 |           |            | 目录下有子文件或子目录，删不掉 | { force: true, recursive: true } | 新写入的文件会覆盖之前的文件 | 文件不会覆盖   | 使用 utf-8 编码 |            | 读取到的文件是个数组 | stats.isFile()文件、stats.isDirectory()目录 |
 
-| 读流文件            | 写流入文件           | 读到的文件通过管道写入另一个文件,管道可以连续调用 |
-| ------------------- | -------------------- | ------------------------------------------------- |
-| fs.createReadStream | fs.createWriteStream | rs.pipe(ws)                                       |
+| 读流文件            | 写流入文件           | 可读流通过管道写进可写流,管道可以连续调用 | 可读流经过压缩写进可写流 |
+| ------------------- | -------------------- | ----------------------------------------- | ------------------------ |
+| fs.createReadStream | fs.createWriteStream | rs.pipe(ws)                               | rs.pipe(gzip).pipe(ws)   |
 
 ```js
 const fs = require('fs');
@@ -447,19 +447,81 @@ rs.pipe(ws);
 
 #### (5)、[zlib 模块](https://nodejs.org/dist/latest-v18.x/docs/api/zlib.html)
 
-##### 服务器返回给浏览器静态资源页面，通常是经过压缩的，zlib 提供压缩能力
+##### 应用场景：服务器返回给浏览器一个静态资源页面，通常是经过压缩的，zlib 提供压缩能力，压缩的方式需要在浏览器请求的 Accept-Encoding 里面选择一种编码格式，同时服务器在 Content-Encoding 返回选中的编码格式给浏览器，浏览器按照这种方式进行解码
+
+##### zlib 压缩的方式：gzip，defalte
 
 ```js
+const http = require('http');
+const fs = require('fs');
+const zlib = require('zlib');
+const gzip = zlib.createGzip();
 
+http
+  .createServer((req, res) => {
+    // req是一个可读流，res就是一个可写流
+    const rs = fs.createReadStream('./aaa.md');
+
+    res.writeHead(200, {
+      'Content-Type': 'application/json;charset=utf-8',
+      'Content-Encoding': 'gzip',
+    });
+
+    rs.pipe(gzip).pipe(res);
+  })
+  .listen(3000);
 ```
 
-#### (4)、[events 模块](https://nodejs.org/dist/latest-v18.x/docs/api/events.html)
+#### (6)、[events 模块](https://nodejs.org/dist/latest-v18.x/docs/api/events.html)
 
-##### events 模块用来表示 “发布-订阅” 模式
+##### events 模块用来表示 “订阅 - 发布” 模式，优雅表达异步回调的方式
 
 ```js
+const http = require('http');
+const https = require('https');
+const EventEmitter = require('events');
 
+let events = null;
+
+http
+  .createServer((req, res) => {
+    res.writeHead(200, {
+      'Content-Type': 'application/json',
+    });
+    if (req.url === '/api/aaa') {
+      events = new EventEmitter();
+      // 订阅，回调接收发布传过来的参数
+      events.on('play', (data) => {
+        res.end(data);
+      });
+      httpsGet();
+    }
+  })
+  .listen(3000);
+
+function httpsGet() {
+  let data = '';
+  https.get(
+    'https://gz.meituan.com/ptapi/getComingFilms?ci=20&limit=10',
+    (res) => {
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      res.on('end', () => {
+        // 发布，第二个参数是传给订阅的参数
+        events.emit('play', data);
+      });
+    }
+  );
+}
 ```
+
+#### (7)、[crypto 模块](https://nodejs.org/dist/latest-v18.x/docs/api/crypto.html)
+
+| hase 加密  | 加强版的 hase 加密 | AES 加密       | AES 解密         |
+| ---------- | ------------------ | -------------- | ---------------- |
+| createHase | createHmac         | createCipheriv | createDecipheriv |
 
 ### 8.让 node 实时编译的工具
 

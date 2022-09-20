@@ -8,8 +8,7 @@
 const http = require('http');
 const fs = require('fs');
 const zlib = require('zlib');
-// const gzip = zlib.createGzip();
-const deflate = zlib.createDeflate();
+const gzip = zlib.createGzip();
 
 http.createServer((req, res) => {
   // req是一个可读流，res就是一个可写流 
@@ -17,10 +16,8 @@ http.createServer((req, res) => {
 
   res.writeHead(200, {
     'Content-Type': 'application/json;charset=utf-8',
-    // 'Content-Encoding': 'gzip',
-    'Content-Encoding': 'deflate'
+    'Content-Encoding': 'gzip',
   });
 
-  // rs.pipe(gzip).pipe(res);
-  rs.pipe(deflate).pipe(res);
+  rs.pipe(gzip).pipe(res);
 }).listen(3000);

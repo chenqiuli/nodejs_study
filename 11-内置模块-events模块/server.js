@@ -10,6 +10,7 @@ http.createServer((req, res) => {
   });
   if (req.url === '/api/aaa') {
     events = new EventEmitter();
+    // 订阅，回调接收发布传过来的参数
     events.on("play", (data) => {
       res.end(data);
     });
@@ -25,6 +26,7 @@ function httpsGet () {
     });
 
     res.on("end", () => {
+      // 发布，第二个参数是传给订阅的参数
       events.emit("play", data);
     })
   });
