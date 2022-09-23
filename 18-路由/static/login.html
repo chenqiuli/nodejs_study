@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <h2>模拟登录页，调用get/post接口</h2>
+
+  用户名：<input type="text" id="username"/>
+  <br/>
+  密码：<input type="password" id="password"/>
+  <br/>
+  <button id="loginGet">登录-get</button>
+  <button id="loginPost">登录-post</button>
+</body>
+<script>
+  // fetch方法 默认get请求
+  // 使用post请求，需要在第二个参数注明method，headers，body
+  // fetch方法是promise的封装，经过两个then才能获取到后端的响应结果
+  // fetch的第二个then的方法有res.json 和 res.text
+
+  const loginGet = document.getElementById("loginGet")
+  const loginPost = document.getElementById("loginPost")
+
+  const username = document.getElementById("username")
+  const password = document.getElementById("password")
+
+  
+  loginGet.onclick = () => {
+    fetch(`http://127.0.0.1:3000/api/loginGet?username=${username.value}&password=${password.value}`)
+    .then(res => res.json())
+    .then(res => {
+      console.log(res);
+    })
+  }
+
+  loginPost.onclick = () => {
+    // http:127.0.0.1 与 浏览器打开的localhost 不同，属于跨域
+    fetch("http://localhost:3000/api/loginPost", {
+      method: 'POST',
+      body: JSON.stringify({
+        username: username.value,
+        password: password.value,
+      }),
+      // mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    }).then(res => res.text()).then(res => {
+      console.log(res);
+    });
+  }
+</script>
+</html>

@@ -545,10 +545,38 @@ node-dev server.js
 ```
 
 ```bash
-服务器告诉浏览器如何解析响应的数据
+服务器告诉浏览器如何解析响应的数据，可以使用MIME这个第三方模块来判断文件的扩展名属于什么类型
 # Content-Type: application/json;charset=utf-8;
 # Content-Type: application/x-www-form-urlencoded;charset=utf-8;
 # Content-Type: text/html;charset=utf-8;
 # Content-Type: text/plain;charset=utf-8;
 # Content-Type: text/html;charset=utf-8;
+```
+
+### 10、补充 fetch 请求
+
+#### fetch 方法是 promise 的封装，默认是 get 请求，then 后的第一个 res 不是最终的数据，需要 then 两次，第二次的 then 有几种常用的解析 res 的方法：res.json() 和 res.text()
+
+#### 用 fetch 方法请求 POST 类型的接口时，参数写在 fetch 的第二个参数，{body: {},method: 'POST',headers: {}}，headers 的 Content-Type 需要和后端约定好，
+
+```js
+// GET
+fetch('xxx.api')
+  .then((res) => res.json())
+  .then((res) => {
+    console.log(res);
+  });
+
+// POST
+fetch('xxx.api', {
+  method: 'POST',
+  body: JSON.stringify({}),
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+  .then((res) => res.json())
+  .then((res) => {
+    console.log(res);
+  });
 ```
