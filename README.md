@@ -580,3 +580,23 @@ fetch('xxx.api', {
     console.log(res);
   });
 ```
+
+### 11、路由
+
+#### 路由分为静态资源与 api 接口，可以解耦出来，分模块开发，最后合并为一个大路由对象，后端返回给前端静态资源的时候，静态资源包含 html，js，css 等，不可能把每个请求都枚举列出来，所以可以利用路径，拼凑出来找出它的绝对路径位置，利用 fs 模块判断改文件是否存在，如果存在返回它的静态文件，不存在即返回 404
+
+#### 1.node 中获取当前绝对路径，node 中的一个内置对象：\_\_dirname
+
+#### 2.node 中拼凑路径的内置模块，path 模块
+
+```js
+const path = require('path');
+path.join(__dirname, '/static', '/login.html');
+```
+
+#### 3.获取文件扩展名的类型：mime 第三方模块
+
+```js
+const mime = require('mime');
+mime.getType('css');
+```
