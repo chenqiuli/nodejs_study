@@ -14,4 +14,4 @@
 
 #### fetch 如果不设置 mode，直接设置 Content-Type 为 application/json，fetch 默认会认为这是跨域模式，在跨域 POST 之前，客户端会先发一条 OPTIONS 请求，服务器允许，再继续 POST 数据。这是为了检查服务器的性能，判断发送的请求是否安全。
 
-#### node 服务器打开的网址是 http://localhost:3000，我在前端请求 node 接口写的是http://127.0.0.1:3000，域名不同，所以跨域了
+#### node 服务器打开的网址是 http://localhost:3000，我在前端请求 node 接口写的是http://127.0.0.1:3000，域名不同，所以跨域了，应该写作 http://localhost:3000 就不会跨域

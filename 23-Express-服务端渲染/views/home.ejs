@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="/css/home.css">
+</head>
+<body>
+  <%# 引入外部文件%>
+    <%-include("header.ejs")%>
+     <%# 条件语句或循环语句%>
+    <% data.map(item => { %>
+      <div><%=item.id+'  '+item.title%></div>
+    <% }) %>
+    <%# 执行html片段%>    
+    <%-html%>
+    <%# 执行变量，内可直接写三元表达式%>  
+    <div><%=isShow?'你好':''%></div>
+</body>
+</html>
