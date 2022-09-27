@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h3>mongodb的增删改查</h3>
+    <div>
+      <div>用户名：<input type="text" id="username"></div>
+      <div>密码：<input type="password" id="password"></div>
+      <div>年龄：<input type="text" id="age"></div>
+      <div><input type="submit" value="注册" id="register"></div>
+    </div>
+  </body>
+  <script>
+    const username = document.getElementById("username");
+    const password = document.getElementById("password");
+    const age = document.getElementById("age");
+    const register = document.getElementById("register");
+
+    register.onclick = () => {
+      console.log(username.value,password.value,age.value);
+      fetch('/users/register',{
+        method:'POST',
+        body: JSON.stringify({
+          username: username.value,
+          password: password.value,
+          age: age.value
+        }),
+        headers:{
+          'Content-Type': 'application/json'
+        },
+      }).then(res => res.json())
+      .then(res => {
+        console.log(res);
+      })
+    }
+  </script>
+</html>

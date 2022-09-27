@@ -259,6 +259,7 @@ res.render('home', { data, html, isShow: true }); // 使用模板引擎 第二�
 ```
 
 ```ejs
+    <%# ejs语法%>
     <%# 引入外部文件%>
     <%-include("header.ejs")%>
      <%# 条件语句或循环语句%>
@@ -276,3 +277,7 @@ res.render('home', { data, html, isShow: true }); // 使用模板引擎 第二�
 app.use(express.urlencoded({ extended: false })); // applicaiton/x-www-from-urlencoded
 app.use(express.json()); // application/json
 ```
+
+| res.send | res.render   | res.cookie  |
+| -------- | ------------ | ----------- |
+| 发送数据 | 发送模板引擎 | 设置 cookie |
