@@ -2,39 +2,113 @@
 <html>
   <head>
     <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="/stylesheets/style.css" />
   </head>
   <body>
-    <h3>mongodb的增删改查</h3>
+    <h3>用户管理系统</h3>
     <div>
-      <div>用户名：<input type="text" id="username"></div>
-      <div>密码：<input type="password" id="password"></div>
-      <div>年龄：<input type="text" id="age"></div>
-      <div><input type="submit" value="注册" id="register"></div>
+      <div>用户名：<input type="text" id="username" /></div>
+      <div>密码：<input type="password" id="password" /></div>
+      <div>年龄：<input type="text" id="age" /></div>
+      <div><input type="button" value="添加用户" id="register" /></div>
+      <div><input type="button" value="更新用户" id="update" /></div>
+      <div><input type="button" value="删除用户" id="delete" /></div>
+      <div><input type="button" value="查询用户" id="select" /></div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>id</th>
+            <th>用户名</th>
+            <th>密码</th>
+            <th>年龄</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div>总数：<span id="num"></span></div>
     </div>
   </body>
   <script>
-    const username = document.getElementById("username");
-    const password = document.getElementById("password");
-    const age = document.getElementById("age");
-    const register = document.getElementById("register");
+    const username = document.getElementById('username');
+    const password = document.getElementById('password');
+    const age = document.getElementById('age');
+    const register = document.getElementById('register');
+    const update = document.getElementById('update');
+    const deleteBtn = document.getElementById('delete');
+    const select = document.getElementById('select');
+    const tbody = document.getElementById('tbody');
+    const num = document.getElementById('num');
 
+    // 增
     register.onclick = () => {
-      console.log(username.value,password.value,age.value);
-      fetch('/users/register',{
-        method:'POST',
+      fetch('/users', {
+        method: 'POST',
         body: JSON.stringify({
           username: username.value,
           password: password.value,
-          age: age.value
+          age: age.value,
         }),
-        headers:{
-          'Content-Type': 'application/json'
+        headers: {
+          'Content-Type': 'application/json',
         },
-      }).then(res => res.json())
-      .then(res => {
-        console.log(res);
       })
-    }
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+        });
+    };
+
+    // 改
+    update.onclick = () => {
+      fetch('/users/633500e1afa4e09cfd2d3965', {
+        method: 'PUT',
+        body: JSON.stringify({
+          username: '修改后的username',
+          password: '修改后的password',
+          age: 900,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+        });
+    };
+
+    // 删
+    deleteBtn.onclick = () => {
+      fetch('/users/633500e1afa4e09cfd2d3965', {
+        method: 'delete',
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+        });
+    };
+
+    // 查询
+    select.onclick = () => {
+      fetch('/users?pageNum=1&pageSize=5')
+        .then((res) => res.json())
+        .then((res) => {
+          tbody.innerHTML = res.data
+            .map((item) => {
+              return `
+            <tr>
+              <td>${item._id}</td>
+              <td>${item?.username}</td>
+              <td>${item?.password}</td>
+              <td>${item?.age}</td>
+            </tr>
+          `;
+            })
+            .join();
+
+          num.innerText = res.totalCount;
+        });
+    };
   </script>
 </html>

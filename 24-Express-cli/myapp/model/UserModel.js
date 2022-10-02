@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
 // 模型为user，创建出来后集合名为users
 const UserModel = mongoose.model('user', userSchema);
 
+// 返回一个promise对象
 module.exports = UserModel;
 
 

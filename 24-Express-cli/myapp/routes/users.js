@@ -1,39 +1,27 @@
 var express = require('express');
 var router = express.Router();
-const UserModel = require("../model/UserModel");
+const UserController = require("../controller/userController");
 
-/* GET users listing. */
-router.get('/', function (req, res, next) {
-  res.send('respond with a resource');
-});
+/**
+ * 查询所有  UserModel.find()
+ * 查询指定字段   UserModel.find({}, ['username', 'age'])
+ * 查询总数  UserModel.find({}, ['username', 'age']).count()
+ * 待条件查询  UserModel.find({ age: 21 })
+ * 排序 UserModel.find({}, ['username', 'age']).sort({ age: 1 })
+ * 分页 UserModel.find({}).sort({ age: 1 }).skip((pageNum - 1) * pageSize).limit(pageSize)
+ */
+router.get('/', UserController.selectUser);
 
-router.post('/register', function (req, res, next) {
-  // res.send('respond with a resource');
-  const { username, password, age } = req.body;
-  // 通过Model定义Entity
-  // UserModel.create({
-  //   username,
-  //   password,
-  //   age
-  // }).then(data => {
-  //   console.log(data);
-  //   res.send({ ok: 1 });
-  // }).catch(err => {
-  //   res.send({ ok: 0 });
-  // })
-  const UserEntity = new UserModel({
-    username,
-    password,
-    age
-  });
-  UserEntity.save(err => {
-    if (err) {
-      res.send({ ok: 0 });
-    } else {
-      res.send({ ok: 1 });
-      // res.render('home');
-    }
-  });
-});
+// 新增
+router.post('/', UserController.addUser);
+
+// 更新 updateOne updateMany 
+router.put('/:id', UserController.updateUser);
+
+// 删除 deleteOne deleteMany 
+router.delete('/:id', UserController.deleteUser);
+
+// 登录校验 
+router.post('/login', UserController.validateLogin);
 
 module.exports = router;
