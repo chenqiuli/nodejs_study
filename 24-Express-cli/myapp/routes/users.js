@@ -24,4 +24,7 @@ router.delete('/:id', UserController.deleteUser);
 // 登录校验 
 router.post('/login', UserController.validateLogin);
 
+// 退出登录
+router.get('/logout', UserController.logout);
+
 module.exports = router;

@@ -36,11 +36,21 @@ const UserController = {
     const { username, password } = req.body;
     const result = await UserSerive.validateLogin(username, password);
     if (result?.length) {
+      req.session.user = username; // 设置session对象，默认存在内存中，存在内存中有一个弊端，只有重启服务器才会重新计时
+      // 如果用户一直在使用这个系统，不经过登录验证，cookie过期时间永远不会变
+      // 服务器一更新，客户端的cookie就会丢失，因为session是存在内存中
       res.send({ ok: 1 });
     } else {
       res.send({ ok: 0 });
     }
   },
+
+  logout: (req, res, next) => {
+    // 销毁session
+    req.session.destroy(() => {
+      res.send({ ok: 1 });
+    });
+  }
 }
 
 module.exports = UserController;

@@ -6,6 +6,9 @@
   </head>
   <body>
     <h3>用户管理系统</h3>
+    <h2>
+      <button id="logout">退出登录</button>
+    </h2>
     <div>
       <div>用户名：<input type="text" id="username" /></div>
       <div>密码：<input type="password" id="password" /></div>
@@ -39,10 +42,29 @@
     const select = document.getElementById('select');
     const tbody = document.getElementById('tbody');
     const num = document.getElementById('num');
+    const logout = document.getElementById('logout');
+
+    function rediret(res) {
+      if (res === 0) {
+        location.href = '/';
+      }
+    }
+
+    // 退出登录
+    logout.onclick = () => {
+      fetch('/api/users/logout')
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+          if (res.ok === 1) {
+            location.href = '/';
+          }
+        });
+    };
 
     // 增
     register.onclick = () => {
-      fetch('/users', {
+      fetch('/api/users', {
         method: 'POST',
         body: JSON.stringify({
           username: username.value,
@@ -55,13 +77,13 @@
       })
         .then((res) => res.json())
         .then((res) => {
-          console.log(res);
+          rediret(res.ok);
         });
     };
 
     // 改
     update.onclick = () => {
-      fetch('/users/633500e1afa4e09cfd2d3965', {
+      fetch('/api/users/633500e1afa4e09cfd2d3965', {
         method: 'PUT',
         body: JSON.stringify({
           username: '修改后的username',
@@ -74,24 +96,24 @@
       })
         .then((res) => res.json())
         .then((res) => {
-          console.log(res);
+          rediret(res.ok);
         });
     };
 
     // 删
     deleteBtn.onclick = () => {
-      fetch('/users/633500e1afa4e09cfd2d3965', {
+      fetch('/api/users/633500e1afa4e09cfd2d3965', {
         method: 'delete',
       })
         .then((res) => res.json())
         .then((res) => {
-          console.log(res);
+          rediret(res.ok);
         });
     };
 
     // 查询
     select.onclick = () => {
-      fetch('/users?pageNum=1&pageSize=5')
+      fetch('/api/users?pageNum=1&pageSize=5')
         .then((res) => res.json())
         .then((res) => {
           tbody.innerHTML = res.data

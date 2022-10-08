@@ -53,6 +53,8 @@ db.test.find({}).sort({age:1}).skip(0).limit(2).count()   // 方法可以连用
 | 行/文档 | row                          | document                               |
 | 列/字段 | column                       | field                                  |
 
+<hr>
+
 ### nodejs 操作 Mongodb，利用 mongoose 模型工具
 
 #### 1.mongoose 连接 mongodb 数据库
@@ -63,14 +65,17 @@ const mongoose = require('mongoose');
 /**
  * 连接mongodb，连接成功返回一个promise对象
  */
-mongoose.connect('mongodb://127.0.0.1:27017/nodejs_users', (err) => {
-  if (!err) {
-    console.log('连接成功');
-  } else {
-    throw err;
-  }
-});
+mongoose
+  .connect('mongodb://127.0.0.1:27017/nodejs_users')
+  .then(() => {
+    console.log('成功连接mogodb数据库');
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 ```
+
+<hr>
 
 #### 2.创建模型
 
@@ -94,12 +99,129 @@ const UserModel = mongoose.model('user', userSchema);
 module.exports = UserModel;
 ```
 
-#### 3.通过 Model 定义 Entity
+<hr>
+
+#### 3.通过 Model 操作数据库 crud，遵循 restful 规范
+
+#### restful 规范：接口路径没有东西，只有名词，用一个名词代替 crud 所有接口，但是使用不同的请求方法
 
 ```js
-const UserEntity = new UserModel({
-  username,
-  password,
-  age,
+// 新增
+router.post('/', function (req, res, next) {
+  const { username, password, age } = req.body;
+  UserModel.create({
+    username,
+    password,
+    age,
+  })
+    .then((data) => {
+      res.send({ ok: 1 });
+    })
+    .catch((err) => {
+      res.send({ ok: 0 });
+    });
 });
+
+// 删除 deleteOne deleteMany
+router.delete('/:id', function (req, res, next) {
+  const { id } = req.params;
+  UserModel.deleteOne({ _id: id })
+    .then((data) => {
+      res.send({ ok: 1 });
+    })
+    .catch((err) => {
+      res.send({ ok: 0 });
+    });
+});
+
+// 更新 updateOne updateMany
+router.put('/:id', function (req, res, next) {
+  const { id } = req.params;
+  const { username, password, age } = req.body;
+  UserModel.updateOne(
+    { _id: id },
+    {
+      username,
+      password,
+      age,
+    }
+  )
+    .then((data) => {
+      res.send({ ok: 1 });
+    })
+    .catch((err) => {
+      res.send({ ok: 0 });
+    });
+});
+
+/**
+ * 查询所有  UserModel.find()
+ * 查询指定字段   UserModel.find({}, ['username', 'age'])
+ * 查询总数  UserModel.find({}, ['username', 'age']).count()
+ * 待条件查询  UserModel.find({ age: 21 })
+ * 排序 UserModel.find({}, ['username', 'age']).sort({ age: 1 })
+ * 分页 UserModel.find({}).sort({ age: 1 }).skip((pageNum - 1) * pageSize).limit(pageSize)
+ */
+router.get('/', async function (req, res, next) {
+  const { pageNum, pageSize } = req.query;
+  const data = await UserModel.find({})
+    .sort({ age: 1 })
+    .skip((pageNum - 1) * pageSize)
+    .limit(pageSize);
+  const totalCount = await UserModel.find({}, ['username', 'age']).count();
+  res.send({
+    data,
+    totalCount,
+  });
+});
+```
+
+<hr >
+
+#### 4.使用 MVC 架构
+
+##### M 层 model ：接收 C 层传过来的参数，与数据库交互，返回给 C 层，使用 mongooes 有 model 模型层，所以这里的 M 层可以由 servicces 代替
+
+##### V 层 view ：前端视图渲染
+
+##### C 层 Controller ：接收前端换过来的参数，再传给 M 层，转发接口结果给 V 层
+
+<hr >
+
+#### 5.登录鉴权
+
+![设计草图](./assets/cookie%2Bsession.png)
+
+##### 1.用户不会从页面跳过路由页面，直接进入主页的路由
+
+```markdown
+# 方案一：只使用 cookie
+
+直接使用 cookie，cookie 在客户端容易被伪造
+
+# 方案二：cookie + session 协同使用
+
+使用 cookie+session 协同，session 若存在内存，遇到以上问题；存在数据库数据过多难以维护
+
+cookie 是存在客户端的，session 是存在服务器的，在用户访问网站的时候，后端给前端浏览器设置一个 cookie，这个 cookie 是后端生成的 sessionid，前端在登录页进行用户名和密码的校验成功时，后端进行在 sessionid 内添加一个标识，然后后端进行 sessionid 的解码。
+
+登录鉴权是对所有的接口进行拦截，如果 cookie 失效了，跳回登录页，因此把判断的逻辑做成应用级中间件，对全局的接口及页面进行拦截验证，排除登录页面的接口。
+
+服务器自动给客户端设置 cookie，是有了 express-session 的加持，但是 session 是默认存在内存中的，所以存在几个问题：
+
+# 1.退出登录，销毁 session
+
+# 2.用户一直在访问这个网站，cookie 过期时间没有重新计时
+
+# 3.服务器一旦重启，内存被释放，session 就失效了，就会重新回到登录页
+
+# 4.改良把 session 存放到数据库中，connect-mongo 的加持
+```
+
+```js
+// 把session存放到数据库中
+store: MongoStore.create({
+  mongoUrl: 'mongodb://127.0.0.1:27017/nodejs_session', // 新创建一个session的数据库
+  ttl: 1000 * 60 * 10,
+}),
 ```
