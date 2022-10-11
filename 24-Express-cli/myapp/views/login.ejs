@@ -5,6 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/javascripts/axios.js"></script>
   </head>
   <body>
     <h3>登录页</h3>
@@ -20,18 +22,13 @@
 
     // 登录校验
     login.onclick = () => {
-      fetch('/api/users/login', {
-        method: 'POST',
-        body: JSON.stringify({
+      axios
+        .post('/api/users/login', {
           username: username.value,
           password: password.value,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-        .then((res) => res.json())
+        })
         .then((res) => {
+          res = res.data;
           if (res?.ok === 1) {
             location.href = '/';
           } else {

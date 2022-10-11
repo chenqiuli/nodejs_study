@@ -3,6 +3,8 @@
   <head>
     <title><%= title %></title>
     <link rel="stylesheet" href="/stylesheets/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/javascripts/axios.js"></script>
   </head>
   <body>
     <h3>用户管理系统</h3>
@@ -16,7 +18,6 @@
       <div><input type="button" value="添加用户" id="register" /></div>
       <div><input type="button" value="更新用户" id="update" /></div>
       <div><input type="button" value="删除用户" id="delete" /></div>
-      <div><input type="button" value="查询用户" id="select" /></div>
 
       <table>
         <thead>
@@ -39,86 +40,55 @@
     const register = document.getElementById('register');
     const update = document.getElementById('update');
     const deleteBtn = document.getElementById('delete');
-    const select = document.getElementById('select');
     const tbody = document.getElementById('tbody');
     const num = document.getElementById('num');
     const logout = document.getElementById('logout');
 
-    function rediret(res) {
-      if (res === 0) {
-        location.href = '/';
-      }
-    }
-
     // 退出登录
     logout.onclick = () => {
-      fetch('/api/users/logout')
-        .then((res) => res.json())
-        .then((res) => {
-          console.log(res);
-          if (res.ok === 1) {
-            location.href = '/';
-          }
-        });
+      localStorage.removeItem('token');
+      location.href = '/login';
     };
 
     // 增
     register.onclick = () => {
-      fetch('/api/users', {
-        method: 'POST',
-        body: JSON.stringify({
+      axios
+        .post('/api/users', {
           username: username.value,
           password: password.value,
           age: age.value,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-        .then((res) => res.json())
+        })
         .then((res) => {
-          rediret(res.ok);
+          console.log(res.data);
         });
     };
 
     // 改
     update.onclick = () => {
-      fetch('/api/users/633500e1afa4e09cfd2d3965', {
-        method: 'PUT',
-        body: JSON.stringify({
+      axios
+        .put('/api/users/634527a7ce66ddc358a1961f', {
           username: '修改后的username',
           password: '修改后的password',
           age: 900,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-        .then((res) => res.json())
+        })
         .then((res) => {
-          rediret(res.ok);
+          console.log(res.data);
         });
     };
 
     // 删
     deleteBtn.onclick = () => {
-      fetch('/api/users/633500e1afa4e09cfd2d3965', {
-        method: 'delete',
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          rediret(res.ok);
-        });
+      axios.delete('/api/users/634527a7ce66ddc358a1961f').then((res) => {
+        console.log(res.data);
+      });
     };
 
     // 查询
-    select.onclick = () => {
-      fetch('/api/users?pageNum=1&pageSize=5')
-        .then((res) => res.json())
-        .then((res) => {
-          tbody.innerHTML = res.data
-            .map((item) => {
-              return `
+    axios.get('/api/users?pageNum=1&pageSize=5').then((res) => {
+      res = res.data;
+      tbody.innerHTML = res.data
+        .map((item) => {
+          return `
             <tr>
               <td>${item._id}</td>
               <td>${item?.username}</td>
@@ -126,11 +96,10 @@
               <td>${item?.age}</td>
             </tr>
           `;
-            })
-            .join();
+        })
+        .join('');
 
-          num.innerText = res.totalCount;
-        });
-    };
+      num.innerText = res.totalCount;
+    });
   </script>
 </html>

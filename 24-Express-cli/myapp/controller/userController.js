@@ -2,6 +2,7 @@
  * Controller  只负责处理参数的接收传递给m层，接口的返回给v层
  */
 const UserSerive = require("../services/userService");
+const JWT = require("../utils/jwt");
 
 const UserController = {
   addUser: async (req, res, next) => {
@@ -36,9 +37,9 @@ const UserController = {
     const { username, password } = req.body;
     const result = await UserSerive.validateLogin(username, password);
     if (result?.length) {
-      req.session.user = username; // 设置session对象，默认存在内存中，存在内存中有一个弊端，只有重启服务器才会重新计时
-      // 如果用户一直在使用这个系统，不经过登录验证，cookie过期时间永远不会变
-      // 服务器一更新，客户端的cookie就会丢失，因为session是存在内存中
+      // 登录成功，往res请求头返回token给客户端
+      const token = JWT.generate({ username: result[0].username, _id: result[0]._id });
+      res.header('Authorization', token);
       res.send({ ok: 1 });
     } else {
       res.send({ ok: 0 });
