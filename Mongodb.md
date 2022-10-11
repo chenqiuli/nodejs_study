@@ -1,11 +1,15 @@
-### Mongodb 命令行
+### Mongodb 配置
 
 ```bash
 1.安装，配置环境变量
 2.mongo --version
 3.mongod.exe --dbpath="C:\Users\qiu\Desktop\nodejs\24-Express-cli\db" // 指定数据库存放目录，不可关闭，关闭即表示关闭服务器
-4.mongo.exe // 客户端，测试数据库是否已开启
+4.mongo.exe // 客户端，测试数据库是否已开启，可以执行mongo指令
 ```
+
+<hr>
+
+### Mongodb 命令行
 
 ```bash
 help      // 帮助命令
@@ -103,7 +107,7 @@ module.exports = UserModel;
 
 #### 3.通过 Model 操作数据库 crud，遵循 restful 规范
 
-#### restful 规范：接口路径没有东西，只有名词，用一个名词代替 crud 所有接口，但是使用不同的请求方法
+#### restful 规范：接口路径没有动词，只有名词，用一个名词代替 crud 所有接口，但是使用不同的请求方法
 
 ```js
 // 新增
@@ -190,38 +194,14 @@ router.get('/', async function (req, res, next) {
 
 #### 5.登录鉴权
 
-![设计草图](./assets/cookie%2Bsession.png)
+![cookie+session设计草图](./assets/cookie%2Bsession.png)
 
-##### 1.用户不会从页面跳过路由页面，直接进入主页的路由
+##### json web token
 
-```markdown
-# 方案一：只使用 cookie
-
-直接使用 cookie，cookie 在客户端容易被伪造
-
-# 方案二：cookie + session 协同使用
-
-使用 cookie+session 协同，session 若存在内存，遇到以上问题；存在数据库数据过多难以维护
-
-cookie 是存在客户端的，session 是存在服务器的，在用户访问网站的时候，后端给前端浏览器设置一个 cookie，这个 cookie 是后端生成的 sessionid，前端在登录页进行用户名和密码的校验成功时，后端进行在 sessionid 内添加一个标识，然后后端进行 sessionid 的解码。
-
-登录鉴权是对所有的接口进行拦截，如果 cookie 失效了，跳回登录页，因此把判断的逻辑做成应用级中间件，对全局的接口及页面进行拦截验证，排除登录页面的接口。
-
-服务器自动给客户端设置 cookie，是有了 express-session 的加持，但是 session 是默认存在内存中的，所以存在几个问题：
-
-# 1.退出登录，销毁 session
-
-# 2.用户一直在访问这个网站，cookie 过期时间没有重新计时
-
-# 3.服务器一旦重启，内存被释放，session 就失效了，就会重新回到登录页
-
-# 4.改良把 session 存放到数据库中，connect-mongo 的加持
-```
-
-```js
-// 把session存放到数据库中
-store: MongoStore.create({
-  mongoUrl: 'mongodb://127.0.0.1:27017/nodejs_session', // 新创建一个session的数据库
-  ttl: 1000 * 60 * 10,
-}),
+```bash
+1.客户端登录完成，服务器返回token至返回头
+2.客户端成功请求之前，把token存放至localStorage中
+3.客户端发起请求之前，都要把token带上请求头
+4.服务器统一处理响应所有接口，token在效返回接口数据，失效返回401，token只能用于前后端交互时使用，后端返回路由页面不可用
+5.客户端取到数据，若401统一处理跳转登录页
 ```

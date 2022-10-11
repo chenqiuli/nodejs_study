@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+
+    <div>用户名<input type="text" id="username" /></div>
+    <div>密码<input type="password" id="password" /></div>
+    <div><input type="button" id="add" value="添加用户" /></div>
+    <div><input type="button" id="delete" value="删除用户" /></div>
+    <div><input type="button" id="update" value="修改用户" /></div>
+
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>用户名</th>
+            <th>密码</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <!-- <tr>
+            <td>1</td>
+            <td>2</td>
+          </tr> -->
+        </tbody>
+      </table>
+    </div>
+  </body>
+
+  <script>
+    const username = document.querySelector('#username');
+    const password = document.querySelector('#password');
+    const addBtn = document.querySelector('#add');
+    const deleteBtn = document.querySelector('#delete');
+    const updateBtn = document.querySelector('#update');
+    const tbody = document.querySelector('#tbody');
+
+    addBtn.onclick = () => {
+      fetch('/api/users', {
+        method: 'POST',
+        body: JSON.stringify({
+          username: username.value,
+          password: password.value,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (res?.ok === 0) {
+            location.href = '/login';
+          } else {
+            alert(res?.message);
+          }
+        });
+    };
+
+    deleteBtn.onclick = () => {
+      fetch('/api/users/63428868163fa71a94c39be7', {
+        method: 'delete',
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (res?.message === 'success') {
+            if (res?.ok === 0) {
+              location.href = '/login';
+            } else {
+              alert('删除用户成功');
+            }
+          }
+        });
+    };
+
+    updateBtn.onclick = () => {
+      fetch('/api/users/6342916af8f4ce8b725e1b98', {
+        method: 'put',
+        body: JSON.stringify({
+          username: '这是我修改后的username',
+          password: '这是我修改后的password',
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (res?.ok === 0) {
+            location.href = '/login';
+          } else {
+            alert('更新用户成功');
+          }
+        });
+    };
+
+    fetch('/api/users')
+      .then((res) => res.json())
+      .then((res) => {
+        const { message, data } = res;
+        if (message === 'success') {
+          tbody.innerHTML = data
+            ?.map((item) => {
+              return `
+              <tr>
+                <td>${item.username}</td>
+                <td>${item.password}</td>
+              </tr>
+            `;
+            })
+            .join('');
+        }
+      });
+  </script>
+</html>

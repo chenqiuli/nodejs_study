@@ -1,6 +1,19 @@
-## [Express](https://www.expressjs.com.cn/starter/hello-world.html)
+## [Express](https://www.expressjs.com.cn/starter/generator.html)
 
 ### 一、基础部分
+
+#### 使用 express 脚手架初始化项目
+
+```bash
+npm install -g express-generator
+express -h
+express --view=ejs myapp
+npm i
+"scripts": {
+  "start": "nodemon ./bin/www"
+},
+npm start
+```
 
 #### 1.res.send()，封装了 res.writeHead，res.write，res.end，可以直接返回数据给前端，也可以自动识别什么格式的数据，不需要提前声明 Content-Type。
 
@@ -222,13 +235,20 @@ module.exports = router;
 app.use(express.static('static'));
 ```
 
-### 五、客户端渲染与服务端渲染
+### 五、模板引擎的配置
+
+```bash
+app.set('views', 'views'); // 模板引擎默认使用文件夹
+app.set('view engine', 'ejs'); // 注册ejs模板，默认加载引擎模板的文件夹是views
+```
+
+### 六、客户端渲染与服务端渲染
 
 #### 客户端渲染：前后端分离，不利于搜索引擎
 
 #### 服务端渲染：前后不分离，利于搜索引擎。前端写好静态页面，页面中用假数据，后端开发好接口，取前端的静态页面，使用模板引擎把真实数据替换假数据。
 
-### 六、express
+### 七、express
 
 ```js
 app.use(express.static('static')); // 注册静态资源,static路径无需输入
