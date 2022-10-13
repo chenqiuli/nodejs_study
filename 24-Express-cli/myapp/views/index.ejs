@@ -107,7 +107,7 @@
     };
 
     // 查询
-    axios.get('/api/users?pageNum=1&pageSize=5').then((res) => {
+    axios.get('/api/users?pageNum=1&pageSize=10').then((res) => {
       res = res.data;
       console.log(res, 'res返回的数据');
       tbody.innerHTML = res.data

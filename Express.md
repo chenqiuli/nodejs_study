@@ -386,3 +386,10 @@ const UserController = {
   },
 };
 ```
+
+# 十、生成 api 接口文档
+
+```bash
+npm i -g apidoc
+apidoc -i .\routes -o .\doc
+```
