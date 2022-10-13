@@ -5,6 +5,13 @@
     <link rel="stylesheet" href="/stylesheets/style.css" />
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="/javascripts/axios.js"></script>
+    <style>
+      td img {
+        width: 80px;
+        height: 80px;
+        margin-right: 8px;
+      }
+    </style>
   </head>
   <body>
     <h3>用户管理系统</h3>
@@ -15,6 +22,7 @@
       <div>用户名：<input type="text" id="username" /></div>
       <div>密码：<input type="password" id="password" /></div>
       <div>年龄：<input type="text" id="age" /></div>
+      <div>头像：<input type="file" id="avatar" multiple /></div>
       <div><input type="button" value="添加用户" id="register" /></div>
       <div><input type="button" value="更新用户" id="update" /></div>
       <div><input type="button" value="删除用户" id="delete" /></div>
@@ -26,6 +34,7 @@
             <th>用户名</th>
             <th>密码</th>
             <th>年龄</th>
+            <th>头像</th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
@@ -37,6 +46,7 @@
     const username = document.getElementById('username');
     const password = document.getElementById('password');
     const age = document.getElementById('age');
+    const avatar = document.getElementById('avatar');
     const register = document.getElementById('register');
     const update = document.getElementById('update');
     const deleteBtn = document.getElementById('delete');
@@ -52,15 +62,28 @@
 
     // 增
     register.onclick = () => {
-      axios
-        .post('/api/users', {
-          username: username.value,
-          password: password.value,
-          age: age.value,
-        })
-        .then((res) => {
-          console.log(res.data);
-        });
+      // 上传文件
+      let forms = new FormData();
+      forms.append('username', username.value);
+      forms.append('password', password.value);
+      forms.append('age', age.value);
+      // forms.append('avatar', avatar.files[0]); 上传单个
+
+      console.log(Array.from(avatar.files));
+      // 上传多个
+      Array.from(avatar.files).forEach((item) => {
+        forms.append('avatar', item);
+      });
+
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      };
+
+      axios.post('/api/users', forms, config).then((res) => {
+        console.log(res.data);
+      });
     };
 
     // 改
@@ -86,14 +109,24 @@
     // 查询
     axios.get('/api/users?pageNum=1&pageSize=5').then((res) => {
       res = res.data;
+      console.log(res, 'res返回的数据');
       tbody.innerHTML = res.data
         .map((item) => {
+          const imgHtml = item.avatar
+            .split(',')
+            .map((ele) => {
+              return `<img src="${ele}"/>`;
+            })
+            .join('');
           return `
             <tr>
               <td>${item._id}</td>
               <td>${item?.username}</td>
               <td>${item?.password}</td>
               <td>${item?.age}</td>
+              <td>
+                ${imgHtml}
+              </td>
             </tr>
           `;
         })

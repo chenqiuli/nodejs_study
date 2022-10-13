@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
   username: String,
   password: String,
   age: Number,
+  avatar: String,
 });
 
 // 模型为user，创建出来后mongodb中集合名为users

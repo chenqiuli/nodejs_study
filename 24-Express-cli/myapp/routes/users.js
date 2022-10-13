@@ -1,6 +1,9 @@
 var express = require('express');
+var multer = require('multer');
 var router = express.Router();
 const UserController = require("../controller/userController");
+
+const upload = multer({ dest: 'public/images' }); // 存放到静态资源文件夹 
 
 /**
  * 查询所有  UserModel.find()
@@ -12,8 +15,8 @@ const UserController = require("../controller/userController");
  */
 router.get('/', UserController.selectUser);
 
-// 新增
-router.post('/', UserController.addUser);
+// 新增 avatar接收前端文件的字段，需和前端保持一致 upload.single('avatar')-单个
+router.post('/', upload.array('avatar'), UserController.addUser);
 
 // 更新 updateOne updateMany 
 router.put('/:id', UserController.updateUser);

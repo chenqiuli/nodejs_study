@@ -301,3 +301,88 @@ app.use(express.json()); // application/json
 | res.send | res.render   | res.cookie  |
 | -------- | ------------ | ----------- |
 | 发送数据 | 发送模板引擎 | 设置 cookie |
+
+### 八、第三方插件
+
+```markdown
+# mongoose：连接 mongodb
+
+# express-session：生成 sessionid，自动存到客户端
+
+# connect-mongo：把 session 存到数据库
+
+# jsonwebtoken：生成 token
+
+# multer：客户端文件上传，接收文件
+```
+
+### 九、文件上传
+
+#### 1.前端使用 form 表单提交的方式来提交数据，前端需要在 form 表单写明 action，method，每个 input 控件需要注明 name 值，如果含有文件上传的控件，需要在 form 元素上添加 enctype="multipart/form-data"。服务器使用 multer 模块来处理 multipart/form-data 类型的表单数据
+
+```html
+<div>1、form表单提交文件的格式</div>
+<form action="/api/users" method="post" enctype="multipart/form-data">
+  <div>用户名<input type="text" name="username" /></div>
+  <div>密码<input type="password" name="password" /></div>
+  <div>年龄<input type="text" name="age" /></div>
+  <div>头像<input type="file" name="avatar" /></div>
+  <div><input type="submit" value="提交" /></div>
+</form>
+```
+
+```js
+// 2、ajax提交文件的格式
+register.onclick = () => {
+  // 上传文件
+  let forms = new FormData();
+  forms.append('username', username.value);
+  forms.append('password', password.value);
+  forms.append('age', age.value);
+  // forms.append('avatar', avatar.files[0]); 上传单个
+
+  console.log(Array.from(avatar.files));
+  // 上传多个
+  Array.from(avatar.files).forEach((item) => {
+    forms.append('avatar', item);
+  });
+
+  const config = {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  };
+
+  axios.post('/api/users', forms, config).then((res) => {
+    console.log(res.data);
+  });
+};
+```
+
+```js
+var multer = require('multer');
+const upload = multer({ dest: 'public/images' }); // 存放图片资源的磁盘目录
+// 新增 avatar接收前端文件的字段，需和前端保持一致 upload.single('avatar')-单个
+router.post('/', upload.array('avatar'), UserController.addUser);
+
+const UserController = {
+  addUser: async (req, res, next) => {
+    // console.log(req.files, 'req');
+    const { username, password, age } = req.body;
+    // 单个
+    // const avatar = req.file ? `/images/${req.file.filename}` : '/images/quesheng.jpg';
+    // 多个，存到数据库存字符串
+    const avatar = [];
+    req.files?.forEach((item) => {
+      avatar.push(`/images/${item.filename}`);
+    });
+    await UserSerive.addUser(
+      username,
+      password,
+      age,
+      avatar?.length ? avatar.join(',') : '/images/quesheng.jpg'
+    );
+    res.send({ ok: 1 });
+  },
+};
+```

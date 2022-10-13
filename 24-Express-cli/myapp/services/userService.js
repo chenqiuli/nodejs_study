@@ -7,11 +7,12 @@
 const UserModel = require("../model/UserModel");
 
 const UserSerive = {
-  addUser: (username, password, age) => {
+  addUser: (username, password, age, avatar) => {
     return UserModel.create({
       username,
       password,
-      age
+      age,
+      avatar
     });
   },
 
