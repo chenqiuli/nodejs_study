@@ -390,6 +390,7 @@ const UserController = {
 # 十、生成 api 接口文档
 
 ```bash
-npm i -g apidoc
-apidoc -i .\routes -o .\doc
+npm i -g apidoc 全局安装apidoc
+apidoc -i .\routes -o .\doc 扫描routes目录下的注释，生成文档到doc目录下
+安装vscode的apidoc Snippets插件辅助开发
 ```
