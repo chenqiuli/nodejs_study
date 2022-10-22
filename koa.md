@@ -126,4 +126,47 @@ router.get('/', async (ctx, next) => {
 
 ## 2.在路由前添加一个拦截中间件，如果是登录相关的路由放行，如果 sessionid 有标识就放行，同时重新设置生成新的 sessionid，防止用户一直在用系统而过时了，否则就重定向到登录页。
 
+```js
+const session = require('koa-session-minimal');
+// 设置session
+app.use(
+  session({
+    key: 'cookie_name',
+    cookie: {
+      maxAge: 1000 * 60 * 60, // 设置一个小时过期
+    },
+  })
+);
+// 拦截中间件
+app.use(async (ctx, next) => {
+  if (ctx.url.includes('login')) {
+    await next();
+    return;
+  }
+  if (ctx.session.user) {
+    // 访问成功，重新计算cookie过期时间
+    ctx.session.date = Date.now();
+    await next();
+  } else {
+    ctx.redirect('/login');
+  }
+});
+
+router.post('/login', (ctx, next) => {
+  const { username, password } = ctx.request.body;
+  if (username === 'qiuli' && password === '123') {
+    ctx.session.user = {
+      username: 'qiuli',
+    };
+    ctx.body = {
+      ok: 1,
+    };
+  } else {
+    ctx.body = {
+      ok: 1,
+    };
+  }
+});
+```
+
 # json web token

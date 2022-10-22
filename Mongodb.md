@@ -196,7 +196,7 @@ router.get('/', async function (req, res, next) {
 
 ![cookie+session设计草图](./assets/cookie%2Bsession.png)
 
-##### json web token
+##### json web token - 只能用于 ajax 请求接口的拦截
 
 ```bash
 1.客户端登录完成，服务器返回token至返回头

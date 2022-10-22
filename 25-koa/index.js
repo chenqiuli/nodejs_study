@@ -10,7 +10,7 @@ const app = new Koa();
 app.use(bodyParser()); // 解析body参数
 
 // 注册模板文件目录为views，使用ejs模板解析
-app.use(views(path.join(__dirname, "views"), { extension: 'ejs' }))
+app.use(views(path.join(__dirname, "views"), { extension: 'ejs' }));
 
 // 注册public目录为静态资源，浏览器可以直接访问静态资源的资源 
 // localhost:3000/center.html
@@ -37,7 +37,7 @@ app.use(async (ctx, next) => {
   } else {
     ctx.redirect("/login");
   }
-})
+});
 
 // 注册成应用级中间件
 // router.allowedMethods() 客户端请求路径错误，提示 405 错误，意思是请求方法不对，该响应必须返回一个 Allow 头信息表示当前资源能够接受的请求方法的列表

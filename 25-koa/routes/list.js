@@ -24,3 +24,12 @@ router.get("/", (ctx, next) => {
 
 module.exports = router;
 
+// var JWT = require("../utils/jwt");
+// const token = JWT.generate({ name: 'qiuli' }, '10s');
+// console.log(token);
+// const data = JWT.verify(token);
+// console.log(data);
+// setTimeout(() => {
+//   const data = JWT.verify(token);
+//   console.log(data);
+// }, 11000);

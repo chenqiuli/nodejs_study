@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>登录页</title>
+    <link rel="stylesheet" href="/css/login.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      // Add a request interceptor
+      axios.interceptors.request.use(
+        function (config) {
+          // Do something before request is sent
+          // const authorization = localStorage.getItem('authorization');
+          // // console.log(
+          // //   authorization,
+          // //   '发起请求之前从localStorage中读取authorization，存放到接口的headers中'
+          // // );
+          // config.headers.authorization = `Bearer ${authorization}`;
+          return config;
+        },
+        function (error) {
+          // Do something with request error
+          return Promise.reject(error);
+        }
+      );
+
+      // Add a response interceptor
+      axios.interceptors.response.use(
+        function (response) {
+          // Any status code that lie within the range of 2xx cause this function to trigger
+          // Do something with response data
+          console.log(response.headers);
+          const { authorization } = response.headers;
+          authorization && localStorage.setItem('authorization', authorization);
+          return response;
+        },
+        function (error) {
+          // Any status codes that falls outside the range of 2xx cause this function to trigger
+          // Do something with response error
+          return Promise.reject(error);
+        }
+      );
+    </script>
+  </head>
+  <body>
+    <div>用户名：<input type="text" id="username" /></div>
+    <div>密码：<input type="password" id="password" /></div>
+    <div><input type="button" id="login" value="登录" /></div>
+  </body>
+  <script>
+    const username = document.getElementById('username');
+    const password = document.getElementById('password');
+    const login = document.getElementById('login');
+
+    login.onclick = () => {
+      axios
+        .post('/login/validate', {
+          username: username.value,
+          password: password.value,
+        })
+        .then((res) => {
+          res = res.data;
+          if (res.ok === 1) {
+            location.href = '/users';
+          } else {
+            alert('用户名或密码错误');
+          }
+        });
+    };
+  </script>
+</html>
