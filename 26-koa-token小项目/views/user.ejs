@@ -44,13 +44,13 @@
         }
       );
     </script>
-    <!-- <style>
+    <style>
       td img {
         width: 80px;
         height: 80px;
         margin-right: 8px;
       }
-    </style> -->
+    </style>
   </head>
   <body>
     <h3>用户管理系统</h3>
@@ -65,6 +65,7 @@
             <th>用户名</th>
             <th>密码</th>
             <th>年龄</th>
+            <th>头像</th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
@@ -88,12 +89,20 @@
       tbody.innerHTML = Array.isArray(res)
         ? res
             ?.map((item) => {
+              console.log(item.avatar?.split(','));
+              const imageHtml = item.avatar
+                ?.split(',')
+                ?.map((ele) => {
+                  return `<img src=${ele} />`;
+                })
+                .join('');
               return `
             <tr>
               <td>${item._id}</td>
               <td>${item?.username}</td>
               <td>${item?.password}</td>
               <td>${item?.age}</td>
+              <td>${imageHtml}</td>
             </tr>
           `;
             })

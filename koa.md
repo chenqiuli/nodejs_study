@@ -170,3 +170,35 @@ router.post('/login', (ctx, next) => {
 ```
 
 # json web token
+
+```bash
+npm i jsonwebtoken -S
+```
+
+# 文件上传
+
+```bash
+npm i @koa/multer multer -S
+```
+
+# nodejs 操作 mongodb，连接 mongodb，并存储数据
+
+```bash
+npm i mongoose -S
+```
+
+## 步骤：
+
+### 1.cmd 打开连接 mongodb
+
+### 2.node 连接 mongodb
+
+### 3.新建模型
+
+### 4.使用模型操作文档对象，异步增删改查 async/await
+
+# nodejs 操作 Mysql
+
+```bash
+npm i mysql2 -S
+```

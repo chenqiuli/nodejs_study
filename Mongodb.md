@@ -7,6 +7,11 @@
 4.mongo.exe // 客户端，测试数据库是否已开启，可以执行mongo指令
 ```
 
+### Mongodb 数据库存放在 24-Express-cli/db 下
+
+检查数据库是否启用成功
+![mongodb是否启用成功](./assets/mongodb.png)
+
 <hr>
 
 ### Mongodb 命令行

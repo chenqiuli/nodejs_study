@@ -6,6 +6,8 @@ const router = require("./routes");
 const path = require("path");
 const JWT = require("./utils/jwt");
 
+require("./config/db.config"); // 连接数据库
+
 const app = new Koa();
 
 app.use(static(path.join(__dirname, "public")));
