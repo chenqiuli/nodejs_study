@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>首页</title>
+    <link rel="stylesheet" href="/css/login.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <div>姓名：<input type="text" id="name" /></div>
+    <div>成绩：<input type="password" id="score" /></div>
+    <div><input type="button" id="add" value="提交" /></div>
+  </body>
+  <script>
+    const name = document.getElementById('name');
+    const score = document.getElementById('score');
+    const add = document.getElementById('add');
+
+    add.onclick = () => {
+      axios
+        .post('/home', {
+          name: name.value,
+          score: score.value,
+        })
+        .then((res) => {
+          console.log(res.data);
+        });
+    };
+  </script>
+</html>

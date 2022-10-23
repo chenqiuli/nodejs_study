@@ -202,3 +202,35 @@ npm i mongoose -S
 ```bash
 npm i mysql2 -S
 ```
+
+```js
+async function conn() {
+  const mysql = require('mysql2/promise');
+  const config = {
+    host: '127.0.0.1',
+    port: '3306',
+    user: 'qiu',
+    password: '123456',
+    database: 'test',
+  };
+  const connection = await mysql.createConnection(config);
+  return connection;
+}
+
+module.exports = conn;
+
+const conn = require('../config/db.config');
+
+router.get('/home', async (ctx) => {
+  const { name } = ctx.query;
+  const connection = await conn();
+  // 不带参数查询
+  // const [rows] = await connection.execute('select s.name as sname,s.class_id,c.name as cname from student s inner join classes c on s.class_id = c.id');
+  // 带参数查询
+  const [
+    rows,
+  ] = await connection.execute('select * from student where name = ?', [name]);
+  console.log(rows);
+  ctx.body = rows;
+});
+```
