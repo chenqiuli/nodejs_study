@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title%></title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <%=
+    title%>页面,使用form表单提交的方式,form表单提交的方式要写明每个控件的name值,如果有上传文件的控件,需要在form标签注明enctype="multipart/form-data"
+    <form action="/api/users" method="post" enctype="multipart/form-data">
+      <div>用户名<input type="text" name="username" /></div>
+      <div>密码<input type="password" name="password" /></div>
+      <div>年龄<input type="text" name="age" /></div>
+      <div>头像<input type="file" name="avatar" multiple /></div>
+      <div><input type="submit" value="提交" /></div>
+    </form>
+  </body>
+</html>

@@ -4,7 +4,7 @@
 
 ## 2.koa 入门门槛比 express 高，async await 实现异步流程，更轻量，context 对象（封装了 req 和 res 对象），中间件是洋葱模型，执行下一个中间件把控制权给了下一个中间件，下一个中间件执行完了，再把控制权返回去，所以一定会等下一个中间件执行完的
 
-# 安装 koa2
+# 二、安装 koa2
 
 ```bash
 npm init
@@ -24,9 +24,11 @@ app.use((ctx, next) => {
 app.listen(3000);
 ```
 
-# [koa-router](https://github.com/koajs/router/blob/HEAD/API.md)
+# 三、[koa-router](https://github.com/koajs/router/blob/HEAD/API.md)
 
-## 1、npm i koa-router -S
+```bash
+npm i koa-router -S
+```
 
 ## 2、router.allowedMethods() 客户端请求路径错误，提示 405 错误，意思是请求方法不对，该响应必须返回一个 Allow 头信息表示当前资源能够接受的请求方法的列表
 
@@ -68,9 +70,11 @@ router.redirect('/', '/home');
 app.use(router.routes()).use(router.allowedMethods());
 ```
 
-# koa-static
+# 四、koa-static 设置静态资源
 
-## npm i koa-static -S
+```bash
+npm i koa-static -S
+```
 
 ```js
 const static = require('koa-static');
@@ -79,7 +83,7 @@ const path = require('path');
 app.use(static(path.join(__dirname, 'public')));
 ```
 
-# 获取请求参数
+# 五、获取请求参数
 
 ## get 请求：ctx.query ctx.querystring
 
@@ -92,13 +96,15 @@ const bodyParser = require('koa-bodyparser');
 app.use(bodyParser()); // 编译获取body实体
 ```
 
-# 响应前端数据
+# 六、响应前端数据
 
 ## ctx.body
 
-# 解析模板文件，服务器控制路由的方式-前后不分离
+# 七、解析模板文件，服务器控制路由的方式-前后不分离
 
-## 1.npm i ejs koa-views -S
+```bash
+npm i ejs koa-views -S
+```
 
 ```js
 const views = require('koa-views');
@@ -112,15 +118,17 @@ router.get('/', async (ctx, next) => {
 });
 ```
 
-# cookie 与 session
+# 八、cookie 与 session
 
 ## 1.获取 cookie ：ctx.cookies.get("name")
 
 ## 2.设置 cookie : ctx.cookies.set("locaiton","guangzhou")
 
-# cookie+session 登录鉴权
+# 九、cookie+session 登录鉴权
 
-## koa-session-minimal
+```bash
+npm i  koa-session-minimal -S
+```
 
 ## 步骤：1.使用 koa-session-minimal 设置一个 sessionid，客户端登录成功往 sessionid 添加标识，同时存至客户端 cookie
 
@@ -144,7 +152,7 @@ app.use(async (ctx, next) => {
     return;
   }
   if (ctx.session.user) {
-    // 访问成功，重新计算cookie过期时间
+    // 访问成功，重新生成cookie过期时间
     ctx.session.date = Date.now();
     await next();
   } else {
@@ -169,19 +177,19 @@ router.post('/login', (ctx, next) => {
 });
 ```
 
-# json web token
+# 十、json web token
 
 ```bash
 npm i jsonwebtoken -S
 ```
 
-# 文件上传
+# 十一、文件上传
 
 ```bash
 npm i @koa/multer multer -S
 ```
 
-# nodejs 操作 mongodb，连接 mongodb，并存储数据
+# 十二、nodejs 操作 mongodb，连接 mongodb，并存储数据
 
 ```bash
 npm i mongoose -S
@@ -197,7 +205,7 @@ npm i mongoose -S
 
 ### 4.使用模型操作文档对象，异步增删改查 async/await
 
-# nodejs 操作 Mysql
+# 十三、nodejs 操作 Mysql
 
 ```bash
 npm i mysql2 -S

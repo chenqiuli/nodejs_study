@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title%></title>
+  </head>
+  <body>
+    <h1><%= title%></h1>
+    <!-- 建立socket连接，带着token去，后端验证token，失效跳转login页，没有失效可以进行聊天 -->
+  </body>
+  <script>
+    const WebSocketType = {
+      Error: 0, // 错误
+      GroupList: 1, // 弹幕
+      GroupChat: 2, // 群聊
+      SingleChat: 3, // 私聊
+    };
+    const ws = new WebSocket(
+      `ws://localhost:8088?token=${localStorage.getItem('token')}`
+    );
+
+    ws.onopen = () => {
+      console.log('连接成功');
+    };
+
+    ws.onmessage = (msgObj) => {
+      msgObj = JSON.parse(msgObj.data);
+      switch (msgObj.type) {
+        case WebSocketType.Error:
+          localStorage.removeItem('token');
+          location.href = '/login';
+          break;
+        case WebSocketType.GroupList:
+          console.log(msgObj);
+          break;
+        case WebSocketType.GroupChat:
+          break;
+        case WebSocketType.SingleChat:
+          break;
+        default:
+          break;
+      }
+    };
+
+    ws.onerror = () => {
+      console.log('连接出错啦');
+    };
+  </script>
+</html>

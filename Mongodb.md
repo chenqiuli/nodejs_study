@@ -3,7 +3,7 @@
 ```bash
 1.安装，配置环境变量
 2.mongo --version
-3.mongod.exe --dbpath="C:\Users\qiu\Desktop\nodejs\24-Express-cli\db" // 指定数据库存放目录，不可关闭，关闭即表示关闭服务器
+3.mongod.exe --dbpath="C:\Users\qiu\Desktop\nodejs\24-Express-cli\db" // 指定数据库存放目录，不可关闭，关闭即表示关闭服务器，每次都要先使用这条命令打开mongodb数据库
 4.mongo.exe // 客户端，测试数据库是否已开启，可以执行mongo指令
 ```
 
