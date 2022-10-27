@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= title%></title>
+    <script src="/javascripts/socketio.js"></script>
   </head>
   <body>
     <h1><%= title%></h1>
+    <h1 id="username"></h1>
     <input type="text" id="text" />
     <input type="button" id="send" value="发送" />
     <select id="select">
       <!-- <option value="volvo">Volvo</option>
-      <option value="saab">Saab</option>
-      <option value="mercedes">Mercedes</option>
       <option value="audi">Audi</option> -->
     </select>
     <!-- 1.建立socket连接，带着token去，后端验证token，失效跳转login页，没有失效可以进入聊天室 -->
@@ -27,76 +27,59 @@
       GroupChat: 2, // 群聊
       SingleChat: 3, // 私聊
     };
-    function createWebSocket(type, data, to) {
-      return JSON.stringify({
-        type,
+    function createWebSocket(data, to) {
+      return {
         data,
         to,
-      });
+      };
     }
 
     const select = document.getElementById('select');
     const text = document.getElementById('text');
     const send = document.getElementById('send');
+    const username = document.getElementById('username');
+    username.innerHTML = localStorage.getItem('username');
 
-    const ws = new WebSocket(
-      `ws://localhost:8088?token=${localStorage.getItem('token')}`
+    const socket = io(
+      `ws://localhost:3000?token=${localStorage.getItem('token')}`
     );
 
-    ws.onopen = () => {
-      console.log('连接成功');
-    };
+    // 接收服务器的数据
+    socket.on(WebSocketType.GroupChat, (msg) => {
+      const user = msg.user ? msg.user : '广播';
+      console.log(`${user}：${msg.data}`);
+    });
 
-    // 接收服务器的消息
-    ws.onmessage = (msgObj) => {
-      msgObj = JSON.parse(msgObj.data);
-      // console.log(msgObj);
-      switch (msgObj.type) {
-        case WebSocketType.Error:
-          localStorage.removeItem('token');
-          location.href = '/login';
-          break;
-        case WebSocketType.GroupList:
-          console.log(msgObj);
-          select.innerHTML = '';
-          select.innerHTML =
-            "<option value='all'>all</option>" +
-            msgObj.data
-              ?.map(
-                (item) =>
-                  `<option value=${item.username}>${item.username}</option>`
-              )
-              .join('');
-          break;
-        case WebSocketType.GroupChat:
-          const user = msgObj.user ? `${msgObj.user}：` : '';
-          console.log(`${user}${msgObj?.data}`);
-          break;
-        case WebSocketType.SingleChat:
-          console.log(`${msgObj.user}：${msgObj?.data}`);
-          break;
-        default:
-          break;
-      }
-    };
+    socket.on(WebSocketType.Error, () => {
+      localStorage.removeItem('token');
+      location.href = '/login';
+    });
 
-    ws.onerror = () => {
-      console.log('连接出错啦');
-    };
+    socket.on(WebSocketType.GroupList, (msg) => {
+      select.innerHTML = '';
+      select.innerHTML =
+        "<option value='all'>all</option>" +
+        msg.data
+          .map(
+            (item) => `<option value=${item.username}>${item.username}</option>`
+          )
+          .join('');
+    });
+
+    socket.on(WebSocketType.SingleChat, (msg) => {
+      console.log(`${msg.user}：${msg.data}`);
+    });
 
     // 发送消息给服务器
     send.onclick = () => {
       if (select.value === 'all') {
-        // 群发
-        ws.send(createWebSocket(WebSocketType.GroupChat, text.value));
+        // 群发 发送消息
+        socket.emit(WebSocketType.GroupChat, createWebSocket(text.value, null));
       } else {
         // 私聊
-        ws.send(
-          createWebSocket(
-            WebSocketType.SingleChat,
-            text.value,
-            select.value // 发送给谁
-          )
+        socket.emit(
+          WebSocketType.SingleChat,
+          createWebSocket(text.value, select.value)
         );
       }
     };

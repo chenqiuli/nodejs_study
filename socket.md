@@ -32,7 +32,7 @@ npm i ws -S
 
 ## 优雅降级，不支持 websocket 的浏览器可以优雅降级为长轮询实现推模式
 
-## 可以自定义很多事件，
+## io.on 可以自定义很多事件，
 
 ## 热更新，开发效率高，开发成本低
 
@@ -40,7 +40,7 @@ npm i ws -S
 
 ## 与 express 共用 3000 端口号
 
-## socket.handshake 获取前端的参数
+## socket.handshake 获取前端的参数 socket.handshake.query.token
 
 ## socket.emit("aaa","111") 前后端均可 发布 aaa 事件，传递 111
 

@@ -30,6 +30,7 @@
         .then((res) => {
           res = res.data;
           if (res?.ok === 1) {
+            localStorage.setItem('username', username.value);
             location.href = '/chat';
           } else {
             alert('用户名或密码错误');
