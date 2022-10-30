@@ -1,0 +1,103 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 20px 0 0 20px;
+  width: 600px;
+}
+
+.user {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 4px;
+}
+
+.title {
+  height: 100%;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: bold;
+  width: 100%;
+  height: 50px;
+}
+
+.container {
+  height: 700px;
+  background: #f1d4d4;
+  width: 100%;
+  overflow-y: auto;
+}
+
+.chatList {
+  margin-top: 15px;
+}
+
+.chatItem {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.chatItemRight {
+  justify-content: flex-end;
+}
+
+.chatItem .text {
+  display: inline-block;
+  padding: 0 6px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 300px;
+  min-height: 40px;
+}
+
+.chatItemRight > .text {
+  background: #62b900;
+}
+
+.chatItemLeft .text {
+  background: #ffffff;
+}
+
+.chatItemLeft {
+  display: flex;
+}
+
+.chatItemLeft .otherUser {
+  display: inline-block;
+  margin-bottom: 4px;
+}
+
+.chatItem img {
+  width: 40px;
+  height: 40px;
+  margin: 0 10px;
+}
+
+.inputBox {
+  display: flex;
+  width: 100%;
+  height: 50px;
+}
+
+.inputBox .text {
+  width: 540px;
+}
+
+.inputBox .send {
+  width: 60px;
+  cursor: pointer;
+}

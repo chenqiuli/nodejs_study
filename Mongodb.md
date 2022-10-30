@@ -196,17 +196,3 @@ router.get('/', async function (req, res, next) {
 ##### C 层 Controller ：接收前端换过来的参数，再传给 M 层，转发接口结果给 V 层
 
 <hr >
-
-#### 5.登录鉴权
-
-![cookie+session设计草图](./assets/cookie%2Bsession.png)
-
-##### json web token - 只能用于 ajax 请求接口的拦截
-
-```bash
-1.客户端登录完成，服务器返回token至返回头
-2.客户端成功请求之前，把token存放至localStorage中
-3.客户端发起请求之前，都要把token带上请求头
-4.服务器统一处理响应所有接口，拿到token，使用之前的秘钥对比有没有被篡改，token有效返回接口数据，失效返回401，token只能用于前后端交互时使用，后端返回路由页面不可用
-5.客户端取到数据，若401统一处理跳转登录页，若成功进入页面则再次把token存至localStorage中
-```

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>聊天室</title>
+    <link rel="stylesheet" href="/css/chat.css" />
+    <script src="/js/axios.js"></script>
+    <script src="/js/socketio.js"></script>
+    <script src="/js/jquery.js"></script>
+  </head>
+  <body>
+    <div class="user">当前用户：<span id="user"></span></div>
+    <div class="title"><span id="newComingUsers">xxx</span>&nbsp;的群聊</div>
+    <div class="container">
+      <div class="chatList" id="chatList">
+        <!-- 右边 -->
+        <!-- <div class="chatItem chatItemRight">
+          <span class="text">你好</span>
+          <p><img src="/imgs/qiu.jpg" alt="avatar" /></p>
+        </div> -->
+        <!-- 左边 -->
+        <!-- <div class="chatItem chatItemLeft">
+          <p><img src="/imgs/qin.jpg" alt="avatar" /></p>
+          <p class="otherUserInfo">
+            <span class="otherUser">梁泽钦</span>
+            <span class="text">你好</span>
+          </p>
+        </div> -->
+      </div>
+    </div>
+    <div class="inputBox">
+      <input type="text" id="text" class="text" />
+      <input type="button" id="send" class="send" value="发送" />
+    </div>
+  </body>
+
+  <script>
+    const user = document.getElementById('user');
+    user.innerHTML = localStorage.getItem('user');
+
+    const newComingUsers = document.getElementById('newComingUsers');
+    const send = document.getElementById('send');
+    const text = document.getElementById('text');
+    const chatList = document.getElementById('chatList');
+
+    // 消息的类型
+    const webSocketType = {
+      Error: 0,
+      GroupChat: 1,
+      GroupList: 2,
+      SingleChat: 3,
+      ChatList: 4,
+    };
+
+    // 封装发送消息的格式
+    function createWebSocketInfo(user, data, sendTime) {
+      return {
+        user,
+        data,
+        sendTime,
+      };
+    }
+
+    const renderLeft = ({ avatar, user, data }) => {
+      // 展示在左边
+      $('#chatList').append(`<div class="chatItem chatItemLeft">
+              <p><img src="${avatar}" alt="avatar" /></p>
+              <p class="otherUserInfo">
+                <span class="otherUser">${user}</span>
+                <span class="text">${data}</span>
+              </p>
+            </div>`);
+    };
+
+    const renderRight = ({ avatar, user, data }) => {
+      // 展示在右边
+      $('#chatList').append(`<div class="chatItem chatItemRight">
+              <span class="text">${data}</span>
+              <p><img src="${avatar}" alt="avatar" /></p>
+            </div>`);
+    };
+
+    // 1.连接socket服务器
+    const socket = io(
+      `ws://localhost:3000?token=${localStorage.getItem('authorization')}`
+    );
+
+    // 2.监听连接成功事件，打印xxx连接成功
+
+    // 3.监听用户列表事件，获取所有连接上聊天室的用户列表，展示在newComingUsers
+    socket.on(webSocketType.GroupList, (msg) => {
+      const { data } = msg;
+      newComingUsers.innerHTML = '';
+      newComingUsers.innerHTML = data.map((item) => item.username).join(',');
+    });
+
+    /*
+     * A和B客户端聊了很久，C上线了，C应该看到的聊天记录，怎么做？
+     * 我是运用了巧妙的办法，在客户端发送消息的时候同时发送当前发送的时间，服务端使用一个数组存储所有的消息，
+     * 当每个用户重新连接时，这时候不能用token的时间去判断，对比所有消息的发送时间与当前时间，发送时间小于当前时间的就展示在聊天区域内
+     */
+
+    // 4.监听聊天记录事件
+    socket.on(webSocketType.ChatList, (msg) => {
+      const { data: allData } = msg;
+      const currentTime = Date.now();
+      const currentUser = localStorage.getItem('user');
+      allData.forEach((item) => {
+        const { user, data, avatar, sendTime } = item;
+        if (sendTime < currentTime) {
+          if (user === currentUser) {
+            renderRight(item);
+          } else {
+            renderLeft(item);
+          }
+        }
+      });
+    });
+
+    // 4.监听连接错误事件，token失效
+    socket.on(webSocketType.Error, (msg) => {
+      localStorage.removeItem('authorization');
+      location.href = '/login';
+    });
+
+    // 5.监听群聊事件，判断推送过来的消息是当前用户所发-展示右边，非当前用户所发-展示左边
+    socket.on(webSocketType.GroupChat, (msg) => {
+      const { user, data, avatar } = msg;
+      const currentUser = localStorage.getItem('user');
+      if (user === currentUser) {
+        renderRight(msg);
+      } else {
+        renderLeft(msg);
+      }
+    });
+
+    // 6.群聊，客户端发送消息，发送完成清空
+    send.onclick = () => {
+      socket.emit(
+        webSocketType.GroupChat,
+        createWebSocketInfo(null, text.value, Date.now())
+      );
+      text.value = '';
+    };
+  </script>
+</html>

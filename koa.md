@@ -33,33 +33,17 @@ npm i koa-router -S
 ## 2、router.allowedMethods() 客户端请求路径错误，提示 405 错误，意思是请求方法不对，该响应必须返回一个 Allow 头信息表示当前资源能够接受的请求方法的列表
 
 ```js
+// app.js
+const router = require('./routes');
+app.use(router.routes());
+
+// routes/index.js
 const Router = require('koa-router');
 const router = new Router();
 
-router
-  .get('/', (ctx, next) => {
-    ctx.body = ['aaa', 'bbb', 'ccc'];
-  })
-  .post('/', (ctx, next) => {
-    console.log(ctx);
-    ctx.body = {
-      ok: 1,
-      msg: 'add success',
-    };
-  })
-  .put('/:id', (ctx, next) => {
-    console.log(ctx.params);
-    ctx.body = {
-      ok: 1,
-      msg: 'put success',
-    };
-  })
-  .del('/:id', (ctx, next) => {
-    ctx.body = {
-      ok: 1,
-      msg: 'del success',
-    };
-  });
+const ChatRouter = require('./chat');
+
+router.use('/chat', ChatRouter.routes()).use(ChatRouter.allowedMethods());
 
 // 统一为某个路由模块接口加前缀
 router.prefix('/api');
@@ -67,7 +51,17 @@ router.prefix('/api');
 // 重定向
 router.redirect('/', '/home');
 
-app.use(router.routes()).use(router.allowedMethods());
+module.exports = router;
+
+// routes/chat.js
+const Router = require('koa-router');
+const router = new Router();
+
+router.get('/', async (ctx, next) => {
+  await ctx.render('chat');
+});
+
+module.exports = router;
 ```
 
 # 四、koa-static 设置静态资源
@@ -92,8 +86,8 @@ app.use(static(path.join(__dirname, 'public')));
 ## post 请求：ctx.request.body ，借助 koa-bodyparser
 
 ```js
-const bodyParser = require('koa-bodyparser');
-app.use(bodyParser()); // 编译获取body实体
+const bodyparser = require('koa-bodyparser');
+app.use(bodyparser()); // 编译获取body实体
 ```
 
 # 六、响应前端数据
@@ -189,7 +183,7 @@ npm i jsonwebtoken -S
 npm i @koa/multer multer -S
 ```
 
-# 十二、nodejs 操作 mongodb，连接 mongodb，并存储数据
+# 十二、nodejs 操作 mongodb，连接 mongodb，并存储数据，跟 express 一样
 
 ```bash
 npm i mongoose -S
@@ -212,6 +206,7 @@ npm i mysql2 -S
 ```
 
 ```js
+// 封装基于mysql2的请求
 async function conn() {
   const mysql = require('mysql2/promise');
   const config = {
@@ -227,6 +222,7 @@ async function conn() {
 
 module.exports = conn;
 
+// 在路由接口中使用
 const conn = require('../config/db.config');
 
 router.get('/home', async (ctx) => {
@@ -238,7 +234,7 @@ router.get('/home', async (ctx) => {
   const [
     rows,
   ] = await connection.execute('select * from student where name = ?', [name]);
-  console.log(rows);
+  console.log(rows); // 数组
   ctx.body = rows;
 });
 ```

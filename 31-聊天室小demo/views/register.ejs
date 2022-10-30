@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>注册</title>
+    <link rel="stylesheet" href="/css/login.css" />
+    <script src="/js/axios.js"></script>
+  </head>
+  <body>
+    <div class="root">
+      <div class="title">注册</div>
+      <p><input type="text" id="username" placeholder="用户名" required /></p>
+      <p><input type="password" id="password" placeholder="密码" required /></p>
+      <p><label for="file">头像：</label><input type="file" id="avatar" /></p>
+      <p><input type="button" id="register" value="注册" class="login" /></p>
+      <p><a href="/login">去登录</a></p>
+    </div>
+  </body>
+  <script>
+    const username = document.getElementById('username');
+    const password = document.getElementById('password');
+    const register = document.getElementById('register');
+    const avatar = document.getElementById('avatar');
+
+    register.onclick = () => {
+      // console.log(avatar.files[0]);
+      if (
+        username.value.trim() &&
+        password.value.trim() &&
+        Object.entries(avatar.files)?.length
+      ) {
+        let forms = new FormData();
+        forms.append('username', username.value.trim());
+        forms.append('password', password.value.trim());
+        forms.append('avatar', avatar.files[0]);
+        const config = {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        };
+
+        axios
+          .post('http://localhost:3000/register', forms, config)
+          .then((res) => {
+            const { code, msg } = res?.data;
+            if (code === 0) {
+              location.href = '/login';
+            } else {
+              alert(msg);
+            }
+          });
+      } else {
+        alert('用户名和密码不能为空');
+      }
+    };
+  </script>
+</html>
