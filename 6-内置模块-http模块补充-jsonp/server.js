@@ -15,9 +15,9 @@ const { URL } = require('url');
 
 http.createServer((req, res) => {
   const url = new URL(req.url, 'http://127.0.0.1:3000/');
-  console.log(url.searchParams.get('callback'));
+  console.log(req.url, url.searchParams.get('callback'));
   const callbackName = url.searchParams.get('callback');
   res.writeHead(200, { 'Content-type': 'text/html;charset=utf-8' });
-  const data = `${callbackName} (${JSON.stringify(['1', 2])})`
+  const data = `${callbackName} (${JSON.stringify(['1', 2])})`;
   res.end(data);
 }).listen(3000);

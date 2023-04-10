@@ -31,8 +31,9 @@ db.test.save({ username: 'qiu', age: 12 })          // 插入一条文档数据
 db.test.save([{ username: 'qiu', age: 12 }, { username: 'qiuli', age: 12 }]) // 插入多条文档数据
 db.test.remove({ age: 12 })                         // 删除匹配检索的文档数据
 db.test.remove({})                                  // 删除文档全部数据
-db.test.updata({username: 'qiuli'},{age: 100})      // 直接替换,只剩 age: 100
+db.test.updata({username: 'qiuli'},{age: 100})      // 直接替换,只剩 age: 100，没有username了
 db.test.updata({ username: 'qiuli' }, {$set: { age: 12 }})   // 修改username=qiuli的集合的age=12
+db.test.update({ username: 'qiuli' }, {$unset: { age: 12 }})  // 去除username=qiuli的集合的age这一列
 db.test.update({ username: 'qiuli' }, {$inc: { age: 10 }})   // 修改username=qiuli的集合的age在原基础上+10
 db.test.update({ username: 'qiuli' }, {$inc: { age: -10 }})  // 修改username=qiuli的集合的age在原基础上-10
 db.test.find()                          // 查询test集合的文档
