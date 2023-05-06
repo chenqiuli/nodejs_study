@@ -5,10 +5,15 @@
 #### 使用 express 脚手架初始化项目
 
 ```bash
+# 全局安装express脚手架
 npm install -g express-generator
+# 查看express的help命令
 express -h
+# 初始化express项目
 express --view=ejs myapp
+# 安装依赖
 npm i
+# 修改配置文件，热更新文档
 "scripts": {
   "start": "nodemon ./bin/www"
 },
@@ -229,6 +234,31 @@ router.post('/', (req, res) => {
 module.exports = router;
 ```
 
+- 前端发 get 请求，query 参数
+
+```js
+axios({
+  url: `http://localhost:9000/api/users?phone=${phone}`,
+  method: 'GET',
+});
+// express获取query参数
+const { phone } = req.query;
+```
+
+- 前端发 post 请求，body 参数
+
+```js
+axios({
+  url: `http://localhost:9000/api/users`,
+  method: 'POST',
+  data: {
+    name: 'aaa',
+  },
+});
+// express获取body参数
+const { name } = req.body;
+```
+
 ### 四、静态资源的配置
 
 ```bash
@@ -248,7 +278,7 @@ app.set('view engine', 'ejs'); // 注册ejs模板，默认加载引擎模板的�
 
 #### 服务端渲染：前后不分离，利于搜索引擎。前端写好静态页面，页面中用假数据，后端开发好接口，取前端的静态页面，使用模板引擎把真实数据替换假数据。
 
-### 七、express
+### 七、express 使用中间件
 
 ```js
 app.use(express.static('static')); // 注册静态资源,static路径无需输入
@@ -304,17 +334,15 @@ app.use(express.json()); // application/json
 
 ### 八、第三方插件
 
-```markdown
-# mongoose：连接 mongodb
+- mongoose：连接 mongodb
 
-# express-session：生成 sessionid，自动存到客户端
+- express-session：生成 sessionid，自动存到客户端
 
-# connect-mongo：把 session 存到数据库
+- connect-mongo：把 session 存到数据库
 
-# jsonwebtoken：生成 token
+- jsonwebtoken：生成 token
 
-# multer：客户端文件上传，接收文件
-```
+- multer：客户端文件上传，接收文件
 
 ### 九、文件上传
 
@@ -329,6 +357,8 @@ app.use(express.json()); // application/json
   <div>头像<input type="file" name="avatar" /></div>
   <div><input type="submit" value="提交" /></div>
 </form>
+<!-- 前端访问express的图片 -->
+<img src="http://localhost:3000/images/quesheng.jpg" />
 ```
 
 ```js
@@ -362,7 +392,8 @@ register.onclick = () => {
 ```js
 var multer = require('multer');
 const upload = multer({ dest: 'public/images' }); // 存放图片资源的磁盘目录
-// 新增 avatar接收前端文件的字段，需和前端保持一致 upload.single('avatar')-单个
+// 新增 avatar接收前端文件的字段，需和前端保持一致
+// upload.array('avatar')-多个  upload.single('avatar')-单个
 router.post('/', upload.array('avatar'), UserController.addUser);
 
 const UserController = {
@@ -376,6 +407,12 @@ const UserController = {
     req.files?.forEach((item) => {
       avatar.push(`/images/${item.filename}`);
     });
+    // await UserSerive.addUser(
+    //   username,
+    //   password,
+    //   age,
+    //   avatar
+    // ); // 单个
     await UserSerive.addUser(
       username,
       password,

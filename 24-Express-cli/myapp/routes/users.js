@@ -3,7 +3,7 @@ var multer = require('multer');
 var router = express.Router();
 const UserController = require("../controller/userController");
 
-const upload = multer({ dest: 'public/images' }); // 存放到静态资源文件夹 
+const upload = multer({ dest: 'public/images' }); // 把上传的图片存放到静态资源文件夹 
 
 /**
  * 查询所有  UserModel.find()
@@ -67,7 +67,8 @@ router.get('/', UserController.selectUser);
  *     ok : 1
  * }
  */
-// 新增 avatar接收前端文件的字段，需和前端保持一致 upload.single('avatar')-单个
+// 新增 avatar接收前端文件的字段，需和前端保持一致 
+// upload.single('avatar')-单个 upload.array('avatar')-多个
 router.post('/', upload.array('avatar'), UserController.addUser);
 
 

@@ -3,7 +3,7 @@
 ```bash
 1.安装，配置环境变量
 2.mongo --version
-3.mongod.exe --dbpath="C:\Users\qiu\Desktop\nodejs\24-Express-cli\db" // 指定数据库存放目录，不可关闭，关闭即表示关闭服务器，每次都要先使用这条命令打开mongodb数据库
+3.mongod.exe --dbpath="C:\Users\qiu\Desktop\nodejs\24-Express-cli\db" // 在安装mongodb的bin目录下，指定数据库存放目录，不可关闭，关闭即表示关闭服务器，每次都要先使用这条命令打开mongodb数据库，dbpath是db目录
 4.mongo.exe // 客户端，测试数据库是否已开启，可以执行mongo指令
 ```
 
@@ -23,7 +23,7 @@ show dbs  // 查看数据库，除了三个默认的数据库，其他的需要�
 use db   // 没有就创建数据库，有就切换
 db       // 查看当前所在的数据库
 
-db.createCollection("users") // 创建集合
+db.createCollection("users") // 创建集合=表
 db.getCollectionNames()      // 查看集合
 db.test.drop()               // 删除某个集合，test是集合名
 
@@ -65,11 +65,59 @@ db.test.find({}).sort({age:1}).skip(0).limit(2).count()   // 方法可以连用
 
 <hr>
 
-### nodejs 操作 Mongodb，利用 mongoose 模型工具
+### Node + Mongodb 开发
 
-#### 1.mongoose 连接 mongodb 数据库
+### 1.安装必要的依赖
+
+```bash
+npm i mongoose -S
+```
+
+### 2.配合 MongoDB Compass 使用，需要在命令行先创建数据库，往数据库里插集合，然后可以选择导入外部文件，或者在 Compass 插入，或者代码插入
+
+![](./assets/%E6%95%B0%E6%8D%AE%E5%BA%93%E6%8F%92%E5%85%A5%E9%9B%86%E5%90%88.PNG)
+
+### MongoDB Compass 导入外部 json 文件，使用命令导入：
+
+```bash
+# 在Mongodb的安装bin目录下，运行
+mongoimport --host localhost --port 27017 --db gyk_mongodb --collection user --file "F:\gky\gky-mongodb\大作业\CMS\myapp\dbdata\user.json"
+# gyk_mongodb：数据库名
+# user：集合名
+# "F:\gky\gky-mongodb\大作业\CMS\myapp\dbdata\user.json"：json文件存放路径
+```
+
+```json
+{
+  "name": "baby",
+  "gender": 1,
+  "phone": "13926753538",
+  "birth": "1998-05-27",
+  "avatar": ""
+}
+```
+
+### MongoDB Compass 导入 jsonArray 文件，使用命令导入：
+
+```bash
+mongoimport --host localhost --port 27017 --db gyk_mongodb --collection city --file "F:\gky\gky-mongodb\大作业\CMS\myapp\dbdata\city.json" --jsonArray
+```
+
+```json
+[
+  { "cityId": 110100, "name": "北京", "pinyin": "beijing", "isHot": 1 },
+  { "cityId": 310100, "name": "上海", "pinyin": "shanghai", "isHot": 1 },
+  { "cityId": 440100, "name": "广州", "pinyin": "guangzhou", "isHot": 1 },
+  { "cityId": 440300, "name": "深圳", "pinyin": "shenzhen", "isHot": 1 }
+]
+```
+
+### 3.node 操作 Mongodb，利用 mongoose 模型工具
+
+- 1).mongoose 连接 mongodb 数据库
 
 ```js
+// 1.新建config/db.config.js
 const mongoose = require('mongoose');
 
 /**
@@ -83,6 +131,8 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
+// 2.app.js引入
+require('./config/db.config.js'); // 连接mongodb
 ```
 
 <hr>
@@ -90,6 +140,7 @@ mongoose
 #### 2.创建模型
 
 ```js
+// 2.新建model/userModel.js，把数据库的字段映射过来
 /**
  * 创建用户模型并导出
  * Schema - 对应mongodb中field
@@ -103,7 +154,7 @@ const userSchema = new mongoose.Schema({
   age: Number,
 });
 
-// 模型为user，创建出来后集合名为users
+// 模型为user，创建出来后集合名为users，此处在mongodb里面必须取名为users表
 const UserModel = mongoose.model('user', userSchema);
 
 module.exports = UserModel;

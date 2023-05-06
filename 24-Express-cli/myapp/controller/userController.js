@@ -8,13 +8,14 @@ const UserController = {
   addUser: async (req, res, next) => {
     // console.log(req.files, 'req');
     const { username, password, age } = req.body;
-    // 单个
+    // 单个照片
     // const avatar = req.file ? `/images/${req.file.filename}` : '/images/quesheng.jpg'; 
     // 多个，存到数据库存字符串
     const avatar = [];
     req.files?.forEach(item => {
       avatar.push(`/images/${item.filename}`);
     });
+    // await UserSerive.addUser(username, password, age, avatar); // 单个照片
     await UserSerive.addUser(username, password, age, avatar?.length ? avatar.join(",") : '/images/quesheng.jpg');
     res.send({ ok: 1 });
   },
@@ -64,7 +65,7 @@ const UserController = {
       res.send({ ok: 1 });
     });
   }
-}
+};
 
 module.exports = UserController;
 
