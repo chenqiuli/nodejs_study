@@ -65,19 +65,25 @@ db.test.find({}).sort({age:1}).skip(0).limit(2).count()   // 方法可以连用
 
 <hr>
 
-### Node + Mongodb 开发
+### Express + MongoDB 开发
 
-### 1.安装必要的依赖
+### 1.启动 MongoDB 服务器
+
+```bash
+mongod.exe --dbpath="C:\Users\qiu\Desktop\nodejs\24-Express-cli\db"
+```
+
+### 2.安装必要的依赖
 
 ```bash
 npm i mongoose -S
 ```
 
-### 2.配合 MongoDB Compass 使用，需要在命令行先创建数据库，往数据库里插集合，然后可以选择导入外部文件，或者在 Compass 插入，或者代码插入
+### 3.配合 MongoDB Compass 使用，需要在命令行先创建数据库，往数据库里插集合，然后可以选择导入外部文件，或者在 Compass 插入，或者代码插入
 
 ![](./assets/%E6%95%B0%E6%8D%AE%E5%BA%93%E6%8F%92%E5%85%A5%E9%9B%86%E5%90%88.PNG)
 
-### MongoDB Compass 导入外部 json 文件，使用命令导入：
+- MongoDB Compass 导入外部 json 文件，使用命令导入：
 
 ```bash
 # 在Mongodb的安装bin目录下，运行
@@ -97,7 +103,7 @@ mongoimport --host localhost --port 27017 --db gyk_mongodb --collection user --f
 }
 ```
 
-### MongoDB Compass 导入 jsonArray 文件，使用命令导入：
+- MongoDB Compass 导入 jsonArray 文件，使用命令导入：
 
 ```bash
 mongoimport --host localhost --port 27017 --db gyk_mongodb --collection city --file "F:\gky\gky-mongodb\大作业\CMS\myapp\dbdata\city.json" --jsonArray
@@ -112,9 +118,9 @@ mongoimport --host localhost --port 27017 --db gyk_mongodb --collection city --f
 ]
 ```
 
-### 3.node 操作 Mongodb，利用 mongoose 模型工具
+### 4.node 操作 Mongodb，利用 mongoose 模型工具
 
-- 1).mongoose 连接 mongodb 数据库
+- mongoose 连接 mongodb 数据库
 
 ```js
 // 1.新建config/db.config.js
@@ -137,7 +143,7 @@ require('./config/db.config.js'); // 连接mongodb
 
 <hr>
 
-#### 2.创建模型
+- 创建模型
 
 ```js
 // 2.新建model/userModel.js，把数据库的字段映射过来
@@ -162,9 +168,9 @@ module.exports = UserModel;
 
 <hr>
 
-#### 3.通过 Model 操作数据库 crud，遵循 restful 规范
+- 通过 Model 操作数据库 crud，遵循 restful 规范
 
-#### restful 规范：接口路径没有动词，只有名词，用一个名词代替 crud 所有接口，但是使用不同的请求方法
+  - restful 规范：接口路径没有动词，只有名词，用一个名词代替 crud 所有接口，但是使用不同的请求方法
 
 ```js
 // 新增
@@ -241,10 +247,8 @@ router.get('/', async function (req, res, next) {
 
 #### 4.使用 MVC 架构
 
-##### M 层 model ：接收 C 层传过来的参数，与数据库交互，返回给 C 层，使用 mongooes 有 model 模型层，所以这里的 M 层可以由 servicces 代替
+- M 层 model ：接收 C 层传过来的参数，与数据库交互，返回给 C 层，使用 mongooes 有 model 模型层，所以这里的 M 层可以由 servicces 代替
 
-##### V 层 view ：前端视图渲染
+- V 层 view ：前端视图渲染
 
-##### C 层 Controller ：接收前端换过来的参数，再传给 M 层，转发接口结果给 V 层
-
-<hr >
+- C 层 Controller ：接收前端换过来的参数，再传给 M 层，转发接口结果给 V 层

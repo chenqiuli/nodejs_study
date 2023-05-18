@@ -14,6 +14,7 @@ express --view=ejs myapp
 # 安装依赖
 npm i
 # 修改配置文件，热更新文档
+npm i nodemon -g
 "scripts": {
   "start": "nodemon ./bin/www"
 },

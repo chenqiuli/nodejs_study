@@ -1,17 +1,15 @@
-# 一、koa 与 express 的区别
+## 一、koa 与 express 的区别
 
-## 1.express 周边生态更加成熟，入门门槛低，开箱即用，callback 实现异步流程，req 和 res 对象，中间件是线性模型，流水线执行
+### 1. express 周边生态更加成熟，入门门槛低，开箱即用，callback 实现异步流程，req 和 res 对象，中间件是线性模型，流水线执行
 
-## 2.koa 入门门槛比 express 高，async await 实现异步流程，更轻量，context 对象（封装了 req 和 res 对象），中间件是洋葱模型，执行下一个中间件把控制权给了下一个中间件，下一个中间件执行完了，再把控制权返回去，所以一定会等下一个中间件执行完的
+### 2. koa 入门门槛比 express 高，async await 实现异步流程，更轻量，context 对象（封装了 req 和 res 对象），中间件是洋葱模型，执行下一个中间件把控制权给了下一个中间件，下一个中间件执行完了，再把控制权返回去，所以一定会等下一个中间件执行完的
 
-# 二、安装 koa2
+## 二、安装 [koa](https://www.koajs.com.cn/)
 
 ```bash
 npm init
 npm i koa -S
 ```
-
-# [koa](https://www.koajs.com.cn/)
 
 ```js
 const Koa = require('koa');
@@ -24,13 +22,13 @@ app.use((ctx, next) => {
 app.listen(3000);
 ```
 
-# 三、[koa-router](https://github.com/koajs/router/blob/HEAD/API.md)
+## 三、[koa-router](https://github.com/koajs/router/blob/HEAD/API.md)
 
 ```bash
 npm i koa-router -S
 ```
 
-## 2、router.allowedMethods() 客户端请求路径错误，提示 405 错误，意思是请求方法不对，该响应必须返回一个 Allow 头信息表示当前资源能够接受的请求方法的列表
+### 1、router.allowedMethods() 客户端请求路径错误，提示 405 错误，意思是请求方法不对，该响应必须返回一个 Allow 头信息表示当前资源能够接受的请求方法的列表
 
 ```js
 // app.js
@@ -64,7 +62,7 @@ router.get('/', async (ctx, next) => {
 module.exports = router;
 ```
 
-# 四、koa-static 设置静态资源
+## 四、koa-static 设置静态资源
 
 ```bash
 npm i koa-static -S
@@ -77,24 +75,24 @@ const path = require('path');
 app.use(static(path.join(__dirname, 'public')));
 ```
 
-# 五、获取请求参数
+## 五、获取请求参数
 
-## get 请求：ctx.query ctx.querystring
+- get 请求：ctx.query ctx.querystring
 
-## 动态路由：ctx.params
+- 动态路由：ctx.params
 
-## post 请求：ctx.request.body ，借助 koa-bodyparser
+- post 请求：ctx.request.body ，借助 koa-bodyparser
 
 ```js
 const bodyparser = require('koa-bodyparser');
 app.use(bodyparser()); // 编译获取body实体
 ```
 
-# 六、响应前端数据
+## 六、响应前端数据
 
-## ctx.body
+### ctx.body = 'hello world';
 
-# 七、解析模板文件，服务器控制路由的方式-前后不分离
+## 七、解析模板文件，服务器控制路由的方式-前后不分离
 
 ```bash
 npm i ejs koa-views -S
@@ -112,21 +110,23 @@ router.get('/', async (ctx, next) => {
 });
 ```
 
-# 八、cookie 与 session
+## 八、cookie 与 session
 
-## 1.获取 cookie ：ctx.cookies.get("name")
+- 获取 cookie ：ctx.cookies.get("name")
 
-## 2.设置 cookie : ctx.cookies.set("locaiton","guangzhou")
+- 设置 cookie : ctx.cookies.set("locaiton","guangzhou")
 
-# 九、cookie+session 登录鉴权
+## 九、cookie+session 登录鉴权
 
 ```bash
 npm i  koa-session-minimal -S
 ```
 
-## 步骤：1.使用 koa-session-minimal 设置一个 sessionid，客户端登录成功往 sessionid 添加标识，同时存至客户端 cookie
+### 步骤：
 
-## 2.在路由前添加一个拦截中间件，如果是登录相关的路由放行，如果 sessionid 有标识就放行，同时重新设置生成新的 sessionid，防止用户一直在用系统而过时了，否则就重定向到登录页。
+- 1、使用 koa-session-minimal 设置一个 sessionid，客户端登录成功往 sessionid 添加标识，同时存至客户端 cookie
+
+- 2、在路由前添加一个拦截中间件，如果是登录相关的路由放行，如果 sessionid 有标识就放行，同时重新设置生成新的 sessionid，防止用户一直在用系统而过时了，否则就重定向到登录页。
 
 ```js
 const session = require('koa-session-minimal');
@@ -171,35 +171,35 @@ router.post('/login', (ctx, next) => {
 });
 ```
 
-# 十、json web token
+## 十、json web token
 
 ```bash
 npm i jsonwebtoken -S
 ```
 
-# 十一、文件上传
+## 十一、文件上传
 
 ```bash
 npm i @koa/multer multer -S
 ```
 
-# 十二、nodejs 操作 mongodb，连接 mongodb，并存储数据，跟 express 一样
+## 十二、nodejs 操作 mongodb，连接 mongodb，并存储数据，跟 express 一样
 
 ```bash
 npm i mongoose -S
 ```
 
-## 步骤：
+- 步骤：
 
-### 1.cmd 打开连接 mongodb
+  - cmd 打开连接 mongodb
 
-### 2.node 连接 mongodb
+  - node 连接 mongodb
 
-### 3.新建模型
+  - 新建模型
 
-### 4.使用模型操作文档对象，异步增删改查 async/await
+  - 使用模型操作文档对象，异步增删改查 async/await
 
-# 十三、nodejs 操作 Mysql
+## 十三、nodejs 操作 Mysql
 
 ```bash
 npm i mysql2 -S
