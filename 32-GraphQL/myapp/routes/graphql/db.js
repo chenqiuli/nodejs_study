@@ -10,7 +10,7 @@ const graphqlHttp = require("express-graphql");
  * 3. 定义Schema
  * 4. 使用Schema去操作数据库，返回的是Promise对象，可以链式调用
  * FilmModel.create 
- * FilmModel.update
+ * FilmModel.update 
  * FilmModel.delete
  * FilmModel.find
  */
@@ -43,7 +43,8 @@ const Schema = buildSchema(`
 
   type Query{
     getFilmList: [Film],
-  }
+    getOneFilmList(id: String!): [Film]
+  } 
   
   type Mutation {
     createFilm(input: FilmInput): Film,
@@ -51,12 +52,17 @@ const Schema = buildSchema(`
     deleteFilm(id: String!): Int
   }
 `);
-// 处理器：具体实现该查询的方法
+
+// 处理器：具体实现该查询的方法  
 const root = {
-  // 查
+  // 查所有 
   getFilmList () {
     // 数据库的_id自动对应Film的id
     return FilmModel.find({});
+  },
+  // 查具体
+  getOneFilmList ({ id }) {
+    return FilmModel.find({ _id: id });
   },
   // 增
   createFilm ({ input }) {

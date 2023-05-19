@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button onclick="search()">查询</button>
+    <button onclick="add()">增加</button>
+    <button onclick="edit()">修改</button>
+    <button onclick="del()">删除</button>
+  </body>
+  <script>
+    function search() {
+      const query = `
+        query {
+          getFilmList {
+            id,
+            filmName,
+            price
+          },
+        }
+      `;
+      fetch('/graphqldb', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          query,
+        }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+        });
+    }
+    function add() {
+      // 参数变量前面加$，跟后端定义的Schema一样
+      // 先在graphql调试器自测
+      const query = `
+        mutation($input: FilmInput){
+            createFilm(input: $input){
+              id,
+              filmName,
+              price
+            },
+        }
+      `;
+      fetch('/graphqldb', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          query,
+          // 传递参数
+          variables: {
+            input: {
+              filmName: '我在前台添加的',
+              price: 6000,
+            },
+          },
+        }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+        });
+    }
+    function edit() {
+      const query = `
+        mutation($input: FilmInput, $id: String!){
+          updateFilm(id: $id, input: $input){
+            id,
+            filmName,
+            price
+          },
+        }
+      `;
+      fetch('/graphqldb', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          query,
+          variables: {
+            input: {
+              filmName: '我在前台添加的-修改版本',
+              price: 200,
+            },
+            id: '646724ed78d06c3f2061f77f',
+          },
+        }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+        });
+    }
+    function del() {
+      const query = `
+        mutation($id: String!){
+          deleteFilm(id: $id)
+        }
+      `;
+      fetch('/graphqldb', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          query,
+          variables: {
+            id: '646724ed78d06c3f2061f77f',
+          },
+        }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+        });
+    }
+  </script>
+</html>
