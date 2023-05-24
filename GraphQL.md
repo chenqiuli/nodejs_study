@@ -321,3 +321,44 @@ module.exports = router;
 ```
 
 ![](./assets/graphql%E8%B0%83%E8%AF%95%E7%95%8C%E9%9D%A23.jpg)
+
+- 客户端访问 graphql
+
+```js
+function add() {
+  // 参数变量前面加$，跟后端定义的Schema一样
+  // 先在graphql调试器自测
+  const query = `
+        mutation($input: FilmInput){
+            createFilm(input: $input){
+              id,
+              filmName,
+              price
+            },
+        }
+      `;
+  fetch('/graphqldb', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify({
+      query,
+      // 传递参数
+      variables: {
+        input: {
+          filmName: '我在前台添加的',
+          price: 6000,
+        },
+      },
+    }),
+  })
+    .then((res) => res.json())
+    .then((res) => {
+      console.log(res);
+    });
+}
+```
+
+- react 中访问 graphql：代码在 react_study/myapp/14-graphql

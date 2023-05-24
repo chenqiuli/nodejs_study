@@ -42,8 +42,7 @@ const Schema = buildSchema(`
   }
 
   type Query{
-    getFilmList: [Film],
-    getOneFilmList(id: String!): [Film]
+    getFilmList(id: String!): [Film]
   } 
   
   type Mutation {
@@ -55,17 +54,14 @@ const Schema = buildSchema(`
 
 // 处理器：具体实现该查询的方法  
 const root = {
-  // 查所有 
-  getFilmList () {
-    // 数据库的_id自动对应Film的id
-    return FilmModel.find({});
-  },
-  // 查具体
-  getOneFilmList ({ id }) {
+  // 查
+  getFilmList ({ id }) {
+    if (!id) return FilmModel.find({});
     return FilmModel.find({ _id: id });
   },
   // 增
   createFilm ({ input }) {
+    // console.log(input);
     return FilmModel.create({
       ...input
     });
